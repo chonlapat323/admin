@@ -40,13 +40,10 @@ export default function AdminUserPage() {
     const fetchAdmins = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
         const res = await fetch(
           `http://localhost:3001/users/admins`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            credentials: "include",
           }
         );
         const data = await res.json();
@@ -62,6 +59,9 @@ export default function AdminUserPage() {
     fetchAdmins();
   }, [page]);
 
+  if (!Array.isArray(admins)) {
+    return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;
+  }
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
       <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
