@@ -7,7 +7,8 @@ import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import { API_URL } from "@/lib/config";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 export default function SignInForm() {
   const router = useRouter();
 
@@ -26,19 +27,16 @@ export default function SignInForm() {
     e.preventDefault();
     try {
       // เรียก API /api/login
-      const res = await fetch("http://localhost:3001/auth/login", {
+      const res = await fetchWithAuth(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-      debugger;
       if (res.ok) {
         // Login สำเร็จ
-        console.log("Token:", data.token);
-        localStorage.setItem("token", data.access_token); // ✅ เก็บ Token
-        // TODO: จัดการ token เช่น เก็บใน cookie/localStorage หรือใช้ next-auth แล้ว redirect ไปหน้า Dashboard
         router.push("/"); // ตัวอย่าง redirect ไป /admin
       } else {
         alert(data.message || "Login failed");
@@ -118,7 +116,7 @@ export default function SignInForm() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={password}
-                    autoComplete="new-password"
+                    //autoComplete="new-password"
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <span
