@@ -22,6 +22,7 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         method: 'POST',
         credentials: 'include',
       });
+      debugger;
       window.location.href = '/signin';
     } catch (err) {
       console.error('Logout failed:', err);

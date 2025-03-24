@@ -13,6 +13,9 @@ import Badge from "@/components/ui/badge/Badge";
 import Pagination from "@/components/tables/Pagination";
 import Button from "@/components/ui/button/Button";
 import { PencilIcon,TrashBinIcon } from "@/icons";
+import { API_URL } from "@/lib/config";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+
 
 interface AdminUser {
   id: string;
@@ -40,8 +43,8 @@ export default function AdminUserPage() {
     const fetchAdmins = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `http://localhost:3001/users/admins`,
+        const res = await fetchWithAuth(
+          `${API_URL}/users/admins`,
           {
             credentials: "include",
           }
