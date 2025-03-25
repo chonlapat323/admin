@@ -15,6 +15,7 @@ import Button from "@/components/ui/button/Button";
 import { PencilIcon,TrashBinIcon } from "@/icons";
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import Link from "next/link";
 
 
 interface AdminUser {
@@ -67,9 +68,29 @@ export default function AdminUserPage() {
   }
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
-      <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-        Admin List
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+      <h2 className="text-2xl font-semibold text-gray-800">Admin List</h2>
+      <Link
+        href="/admins/add"
+        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition duration-200"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M16 11V7m0 0V3m0 4h4m-4 0H12m-2 8a4 4 0 100-8 4 4 0 000 8zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"
+          />
+        </svg>
+        <span className="font-medium">Add Member</span>
+      </Link>
+    </div>
 
       <div className="overflow-x-auto">
         <div className="min-w-[800px]">

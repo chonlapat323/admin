@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "User Management",
-    subItems: [{ name: "Admin", path: "/users/admins/", pro: false }],
+    subItems: [{ name: "Admin", path: "/admins/", pro: false }],
   },
   {
     icon: <GridIcon />,
