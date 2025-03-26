@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import UserForm from "@/components/form/user/UserForm";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 
 export default function AddAdminPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -39,6 +40,12 @@ export default function AddAdminPage() {
   
   return (
     <div className="max-w-2xl">
+      <Breadcrumb
+        items={[
+          { label: "Admin List", href: "/admins" },
+          { label: "Add Admin" },
+        ]}
+      />
       <h1 className="text-2xl font-bold mb-6">Add Admin</h1>
 
       <UserForm
