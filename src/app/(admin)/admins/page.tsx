@@ -126,7 +126,7 @@ export default function AdminUserPage() {
                           <Image
                             width={40}
                             height={40}
-                            src={admin.avatar_url || "/images/user/default-avatar.png"}
+                            src={`${process.env.NEXT_PUBLIC_API_URL}${admin.avatar_url}` || "/images/user/default-avatar.png"}
                             alt={admin.first_name || "user"}
                           />
                         </div>

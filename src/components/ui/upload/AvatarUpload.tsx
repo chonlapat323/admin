@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 
 type ImageUploadProps = {
-  onChange: (file: File | null) => void;
+  onChange?: (file: File | null) => void;
   value?: string; // preview URL
   loading?: boolean;
 };
 
-export default function ImageUpload({ onChange, value, loading }: ImageUploadProps) {
+export default function AvatarUpload({ onChange, value, loading }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [hover, setHover] = useState(false);
 
@@ -16,7 +16,7 @@ export default function ImageUpload({ onChange, value, loading }: ImageUploadPro
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    onChange(file);
+    if (onChange) onChange(file); // ✅ ปลอดภัย
   };
 
   return (

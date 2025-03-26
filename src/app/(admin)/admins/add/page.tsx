@@ -1,29 +1,51 @@
 "use client";
 
+import { useState } from "react";
 import UserForm from "@/components/form/user/UserForm";
 
 export default function AddAdminPage() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
 
-    console.log("✅ Submitted:", data);
-
-    // TODO: POST ไปยัง backend
+  const handleAvatarChange = (file: File | null) => {
+    setAvatarFile(file);
+    if (file) {
+      setAvatarPreview(URL.createObjectURL(file));
+    } else {
+      setAvatarPreview(undefined);
+    }
   };
 
+  const handleSubmit = async (formData: FormData) => {
+    if (avatarFile) {
+      formData.append('avatar', avatarFile);
+    }
+  
+    const res = await fetch("http://localhost:3001/admins", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+  
+    const result = await res.json();
+  
+    if (!res.ok) {
+      alert("❌ Failed: " + result.message);
+      return;
+    }
+  
+    alert("✅ Admin created!");
+  };
+  
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold mb-6">Add Admin</h1>
 
       <UserForm
         role="admin"
-        onSubmit={(formData) => {
-            const data = Object.fromEntries(formData.entries());
-            console.log("📦 Data to submit:", data);
-            // 🔄 ส่งไปยัง API ได้เลย
-        }}
+        onSubmit={handleSubmit}
+        onAvatarChange={handleAvatarChange}
+        avatarPreview={avatarPreview}
         />
 
     </div>
