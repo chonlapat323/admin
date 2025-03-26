@@ -1,14 +1,23 @@
 "use client";
 
-import ImageUpload from "@/components/ui/upload/AvatarUpload";
 import { useState } from "react";
+import AvatarUpload from "@/components/ui/upload/AvatarUpload";
 
 type UserFormProps = {
   role?: "admin" | "member";
   onSubmit: (form: FormData) => void;
+  onAvatarChange?: (file: File | null) => void;
+  avatarPreview?: string;
+  avatarLoading?: boolean;
 };
 
-const UserForm = ({ role = "member", onSubmit }: UserFormProps) => {
+const UserForm = ({
+  role = "member",
+  onSubmit,
+  onAvatarChange,
+  avatarPreview,
+  avatarLoading,
+}: UserFormProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,69 +33,49 @@ const UserForm = ({ role = "member", onSubmit }: UserFormProps) => {
       return;
     }
 
-    setError(null); // เคลียร์ error
+    setError(null);
     onSubmit(formData);
-  };
-
-
-
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const handleImageChange = (file: File | null) => {
-    if (file) {
-      setAvatarFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-
-      // สมมุติว่าคุณจะ upload
-      setUploading(true);
-      setTimeout(() => {
-        setUploading(false); // เสร็จแล้ว
-        console.log("✅ Upload complete", file);
-      }, 1500);
-    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl w-full space-y-5 text-left">
-      {/* First + Last Name */}
-      <div className="block text-sm font-medium text-gray-700 mb-1">
-        <div>
-        <h2>Upload Avatar</h2>
-        <ImageUpload value={previewUrl!} onChange={handleImageChange} loading={uploading} />
-        {selectedFile && (
-            <p>ไฟล์ที่เลือก: {selectedFile.name}</p>
-        )}
-        {/* ส่วนอื่นๆ ของ Component ของคุณ */}
-        </div>
-        <div>
-          <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
-            First Name
-          </label>
-          <input
-            id="first_name"
-            name="first_name"
-            type="text"
-            required
-            placeholder="First Name"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      {/* Avatar Upload */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
+        <AvatarUpload
+          value={avatarPreview}
+          onChange={onAvatarChange}
+          loading={avatarLoading}
+        />
+      </div>
 
-        <div>
-          <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
-            Last Name
-          </label>
-          <input
-            id="last_name"
-            name="last_name"
-            type="text"
-            required
-            placeholder="Last Name"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      {/* First + Last Name */}
+      <div>
+        <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
+          First Name
+        </label>
+        <input
+          id="first_name"
+          name="first_name"
+          type="text"
+          required
+          placeholder="First Name"
+          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
+          Last Name
+        </label>
+        <input
+          id="last_name"
+          name="last_name"
+          type="text"
+          required
+          placeholder="Last Name"
+          className="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
       </div>
 
       {/* Email */}
@@ -141,7 +130,7 @@ const UserForm = ({ role = "member", onSubmit }: UserFormProps) => {
         <div className="text-red-600 text-sm font-medium -mt-3">{error}</div>
       )}
 
-      {/* Role Dropdown (only if admin) */}
+      {/* Role (admin only) */}
       {role === "admin" && (
         <div>
           <label htmlFor="role_id" className="block text-sm font-medium text-gray-700 mb-1">
@@ -173,7 +162,7 @@ const UserForm = ({ role = "member", onSubmit }: UserFormProps) => {
         />
       </div>
 
-      {/* Is Active */}
+      {/* Active */}
       <div className="flex items-center gap-2">
         <input
           id="is_active"
