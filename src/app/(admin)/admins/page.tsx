@@ -17,8 +17,7 @@ import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Link from "next/link";
 import { deleteAdmin } from "@/lib/api/admin";
-import { useRouter } from "next/navigation";
-
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 interface AdminUser {
   id: number;
   email: string;
@@ -36,13 +35,13 @@ const UserRoleMap: Record<number, string> = {
 };
 
 export default function AdminUserPage() {
-  const router = useRouter();
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-
+  const [showModal, setShowModal] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -67,23 +66,29 @@ export default function AdminUserPage() {
     fetchAdmins();
   }, [page]);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this admin?")) return;
-  
-    setDeletingId(id);
-  
-    setTimeout(async () => {
-      try {
-        await deleteAdmin(id);
-        setAdmins((prev) => prev.filter((admin) => admin.id !== id));
-        setDeletingId(null);
-      } catch (error) {
-        console.error("❌ Delete error:", error);
-        alert("Delete failed");
-        setDeletingId(null);
-      }
-    }, 300); // 300ms คือความยาวของ transition
+  const handleDeleteClick = (id: number) => {
+    setSelectedId(id);
+    setShowModal(true);
   };
+
+  const handleConfirmDelete = async () => {
+    if (selectedId === null) return;
+  
+    setDeletingId(selectedId);
+    setShowModal(false);
+  
+    try {
+      await deleteAdmin(selectedId);
+      setAdmins((prev) => prev.filter((admin) => admin.id !== selectedId));
+    } catch (error) {
+      console.error("❌ Delete error:", error);
+      alert("Delete failed");
+    } finally {
+      setDeletingId(null);
+      setSelectedId(null);
+    }
+  };
+  
 
   if (!Array.isArray(admins)) {
     return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;
@@ -185,7 +190,7 @@ export default function AdminUserPage() {
                         Edit
                       </Button>
                       <Button
-                       onClick={() => handleDelete(admin.id)}
+                        onClick={() => handleDeleteClick(admin.id)}
                         size="sm"
                         variant="outline"
                         startIcon={<TrashBinIcon  />}
@@ -213,6 +218,14 @@ export default function AdminUserPage() {
           />
         </div>
       )}
+
+      <ConfirmModal
+        open={showModal}
+        title="Delete Admin?"
+        description="This action cannot be undone. Are you sure you want to delete this admin?"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowModal(false)}
+      />
     </div>
   );
 }
