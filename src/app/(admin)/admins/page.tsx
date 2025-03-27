@@ -16,10 +16,11 @@ import { PencilIcon,TrashBinIcon } from "@/icons";
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Link from "next/link";
-
+import { deleteAdmin } from "@/lib/api/admin";
+import { useRouter } from "next/navigation";
 
 interface AdminUser {
-  id: string;
+  id: number;
   email: string;
   first_name?: string;
   last_name?: string;
@@ -35,10 +36,13 @@ const UserRoleMap: Record<number, string> = {
 };
 
 export default function AdminUserPage() {
+  const router = useRouter();
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -62,6 +66,24 @@ export default function AdminUserPage() {
 
     fetchAdmins();
   }, [page]);
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this admin?")) return;
+  
+    setDeletingId(id);
+  
+    setTimeout(async () => {
+      try {
+        await deleteAdmin(id);
+        setAdmins((prev) => prev.filter((admin) => admin.id !== id));
+        setDeletingId(null);
+      } catch (error) {
+        console.error("❌ Delete error:", error);
+        alert("Delete failed");
+        setDeletingId(null);
+      }
+    }, 300); // 300ms คือความยาวของ transition
+  };
 
   if (!Array.isArray(admins)) {
     return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;
@@ -119,7 +141,9 @@ export default function AdminUserPage() {
                 </TableRow>
               ) : (
                 admins.map((admin) => (
-                  <TableRow key={admin.id}>
+                  <TableRow key={admin.id} className={`transition-opacity duration-300 ${
+                    deletingId === admin.id ? "opacity-0" : "opacity-100"
+                  }`} >
                     <TableCell className="px-4 py-3 text-left">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 overflow-hidden rounded-full border">
@@ -161,6 +185,7 @@ export default function AdminUserPage() {
                         Edit
                       </Button>
                       <Button
+                       onClick={() => handleDelete(admin.id)}
                         size="sm"
                         variant="outline"
                         startIcon={<TrashBinIcon  />}
