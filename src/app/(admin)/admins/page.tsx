@@ -18,6 +18,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Link from "next/link";
 import { deleteAdmin } from "@/lib/api/admin";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { toast } from "sonner";
 interface AdminUser {
   id: number;
   email: string;
@@ -80,9 +81,9 @@ export default function AdminUserPage() {
     try {
       await deleteAdmin(selectedId);
       setAdmins((prev) => prev.filter((admin) => admin.id !== selectedId));
+      toast.success("Admin delete successfully!");
     } catch (error) {
-      console.error("❌ Delete error:", error);
-      alert("Delete failed");
+      toast.error("❌ Delete error:");
     } finally {
       setDeletingId(null);
       setSelectedId(null);

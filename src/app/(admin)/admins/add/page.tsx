@@ -3,10 +3,15 @@
 import { useState } from "react";
 import UserForm from "@/components/form/user/UserForm";
 import Breadcrumb from "@/components/ui/Breadcrumb";
+import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
+
 
 export default function AddAdminPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
+
+  const router = useRouter();
 
   const handleAvatarChange = (file: File | null) => {
     setAvatarFile(file);
@@ -28,14 +33,17 @@ export default function AddAdminPage() {
       credentials: "include",
     });
   
-    const result = await res.json();
-  
     if (!res.ok) {
-      alert("❌ Failed: " + result.message);
+      toast.error("Failed to create admin. Please try again.");
+      // setAlert({
+      //   type: "error",
+      //   title: "Error",
+      //   message: "Failed to create admin. Please try again.",
+      // });
       return;
     }
-  
-    alert("✅ Admin created!");
+    toast.success("Admin added successfully!");
+    router.push("/admins");
   };
   
   return (
