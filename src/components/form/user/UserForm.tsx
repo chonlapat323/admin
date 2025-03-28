@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useForm, UseFormReturn } from "react-hook-form";
 import AvatarUpload from "@/components/ui/upload/AvatarUpload";
 
 type UserFormProps = {
+  form: UseFormReturn<FormFields>; // 👈 รับ form object มา
   role?: "admin" | "member";
   onSubmit: (form: FormData) => void;
   onAvatarChange?: (file: File | null) => void;
@@ -11,37 +13,58 @@ type UserFormProps = {
   avatarLoading?: boolean;
 };
 
+export type FormFields = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  confirm_password: string;
+  role_id: string;
+  phone_number?: string;
+  is_active: boolean;
+  note?: string;
+};
+
 const UserForm = ({
   role = "member",
+  form,
   onSubmit,
   onAvatarChange,
   avatarPreview,
   avatarLoading,
 }: UserFormProps) => {
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+    watch,
+  } = form;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+  useEffect(() => {
+    form.trigger("confirm_password");
+  }, [watch("password")]);
 
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirm_password") as string;
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    setError(null);
+  const onFormSubmit = (data: FormFields) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) =>
+      formData.append(key, value.toString())
+    );
     onSubmit(formData);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl w-full space-y-5 text-left">
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      autoComplete="off"
+      className="max-w-xl w-full space-y-5 text-left"
+    >
       {/* Avatar Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Avatar
+        </label>
         <AvatarUpload
           value={avatarPreview}
           onChange={onAvatarChange}
@@ -49,97 +72,82 @@ const UserForm = ({
         />
       </div>
 
-      {/* First + Last Name */}
+      {/* First Name */}
       <div>
-        <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
-          First Name
-        </label>
+        <label htmlFor="first_name">First Name</label>
         <input
-          id="first_name"
-          name="first_name"
-          type="text"
-          required
-          placeholder="First Name"
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
-          Last Name
-        </label>
-        <input
-          id="last_name"
-          name="last_name"
-          type="text"
-          required
-          placeholder="Last Name"
+          {...register("first_name", { required: "First name is required" })}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />
+        {errors.first_name && (
+          <p className="text-red-600 text-sm">{errors.first_name.message}</p>
+        )}
+      </div>
+
+      {/* Last Name */}
+      <div>
+        <label htmlFor="last_name">Last Name</label>
+        <input
+          {...register("last_name", { required: "Last name is required" })}
+          className="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+        {errors.last_name && (
+          <p className="text-red-600 text-sm">{errors.last_name.message}</p>
+        )}
       </div>
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email
-        </label>
+        <label htmlFor="email">Email</label>
         <input
-          id="email"
-          name="email"
           type="email"
-          required
-          placeholder="Email"
+          autoComplete="new-email"
+          inputMode="email"
+          {...register("email", { required: "Email is required" })}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />
+        {errors.email && (
+          <p className="text-red-600 text-sm">{errors.email.message}</p>
+        )}
       </div>
 
       {/* Password */}
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-          Password
-        </label>
+        <label htmlFor="password">Password</label>
         <input
-          id="password"
-          name="password"
           type="password"
-          required
-          placeholder="Password"
           autoComplete="new-password"
+          {...register("password", { required: "Password is required" })}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />
       </div>
 
       {/* Confirm Password */}
       <div>
-        <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1">
-          Confirm Password
-        </label>
+        <label htmlFor="confirm_password">Confirm Password</label>
         <input
-          id="confirm_password"
-          name="confirm_password"
-          type="password"
-          required
-          placeholder="Confirm Password"
-          autoComplete="new-password"
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
-        />
+            type="password"
+            {...register("confirm_password", {
+              required: "Please confirm password",
+              validate: (value) =>
+                value === watch("password") || "Passwords do not match",
+            })}
+            autoComplete="new-password"
+            className="w-full border border-gray-300 rounded-md px-3 py-2"
+          />
+        {errors.confirm_password && (
+          <p className="text-red-600 text-sm">
+            {errors.confirm_password.message}
+          </p>
+        )}
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="text-red-600 text-sm font-medium -mt-3">{error}</div>
-      )}
-
-      {/* Role (admin only) */}
+      {/* Role */}
       {role === "admin" && (
         <div>
-          <label htmlFor="role_id" className="block text-sm font-medium text-gray-700 mb-1">
-            Select Role
-          </label>
+          <label htmlFor="role_id">Select Role</label>
           <select
-            name="role_id"
-            id="role_id"
-            defaultValue="1"
+            {...register("role_id")}
             className="w-full border border-gray-300 rounded-md px-3 py-2"
           >
             <option value="1">Admin</option>
@@ -150,42 +158,30 @@ const UserForm = ({
 
       {/* Phone Number */}
       <div>
-        <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">
-          Phone Number <span className="text-gray-400">(optional)</span>
-        </label>
+        <label htmlFor="phone_number">Phone Number</label>
         <input
-          id="phone_number"
-          name="phone_number"
-          type="text"
-          placeholder="Phone Number"
+          {...register("phone_number")}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />
       </div>
 
-      {/* Active */}
+      {/* Active Checkbox */}
       <div className="flex items-center gap-2">
         <input
-          id="is_active"
-          name="is_active"
           type="checkbox"
+          {...register("is_active")}
           defaultChecked
           className="w-4 h-4"
         />
-        <label htmlFor="is_active" className="text-sm font-medium text-gray-700">
-          Active
-        </label>
+        <label>Active</label>
       </div>
 
       {/* Note */}
       <div>
-        <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-1">
-          Note <span className="text-gray-400">(optional)</span>
-        </label>
+        <label htmlFor="note">Note</label>
         <textarea
-          id="note"
-          name="note"
+          {...register("note")}
           rows={3}
-          placeholder="Note"
           className="w-full border border-gray-300 rounded-md px-3 py-2"
         />
       </div>
