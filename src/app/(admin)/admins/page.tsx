@@ -91,7 +91,7 @@ export default function AdminUserPage() {
       setAdmins((prev) => prev.filter((admin) => admin.id !== selectedId));
       toast.success("Admin delete successfully!");
     } catch (error) {
-      toast.error("❌ Delete error:");
+      toast.error("❌ Delete error:"+error);
     } finally {
       setDeletingId(null);
       setSelectedId(null);

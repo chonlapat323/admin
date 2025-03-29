@@ -69,7 +69,7 @@ const UserForm = ({
       const element = document.getElementById("email");
       element?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [errors.email]);
+  }, [errors.email,setFocus]);
 
   // ✅ FormData พร้อมส่ง (กรอง password ถ้าไม่ได้กรอก)
   const onFormSubmit = (data: FormFields) => {
