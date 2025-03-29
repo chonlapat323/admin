@@ -7,6 +7,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import UserForm from "@/components/form/user/UserForm";
 import { useState } from "react";
 import type { FormFields } from "@/components/form/user/UserForm"
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 export default function AddAdminPage() {
   const router = useRouter();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -30,7 +31,7 @@ export default function AddAdminPage() {
       formData.append("avatar", avatarFile);
     }
 
-    const res = await fetch("http://localhost:3001/admins", {
+    const res = await fetchWithAuth("http://localhost:3001/admins", {
       method: "POST",
       body: formData,
       credentials: "include",

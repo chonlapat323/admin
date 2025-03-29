@@ -1,11 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import {  UseFormReturn } from "react-hook-form";
 import AvatarUpload from "@/components/ui/upload/AvatarUpload";
 
+export type FormFields = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password?: string;
+  confirm_password?: string;
+  role_id: string;
+  phone_number?: string;
+  is_active: boolean;
+  note?: string;
+};
+
 type UserFormProps = {
-  form: UseFormReturn<FormFields>; // 👈 รับ form object มา
+  form: UseFormReturn<FormFields>;
   role?: "admin" | "member";
   onSubmit: (form: FormData) => void;
   onAvatarChange?: (file: File | null) => void;
@@ -13,21 +25,9 @@ type UserFormProps = {
   avatarLoading?: boolean;
 };
 
-export type FormFields = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  confirm_password: string;
-  role_id: string;
-  phone_number?: string;
-  is_active: boolean;
-  note?: string;
-};
-
 const UserForm = ({
-  role = "member",
   form,
+  role = "member",
   onSubmit,
   onAvatarChange,
   avatarPreview,
@@ -37,34 +37,61 @@ const UserForm = ({
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    clearErrors,
+    setFocus,
+    formState: { errors, touchedFields },
     watch,
   } = form;
 
+  const password = watch("password");
+  const confirmPassword = watch("confirm_password");
+
+  // ✅ เช็ค password match เฉพาะตอนที่มีค่า
   useEffect(() => {
-    form.trigger("confirm_password");
-  }, [watch("password")]);
+    if (password || confirmPassword) {
+      if (password !== confirmPassword) {
+        setError("confirm_password", {
+          type: "manual",
+          message: "Passwords do not match",
+        });
+      } else {
+        clearErrors("confirm_password");
+      }
+    } else { 
+      clearErrors("confirm_password");
+    }
+  }, [password, confirmPassword, setError, clearErrors]);
 
+  useEffect(() => {
+    if (errors.email) {
+      setFocus("email");
+  
+      const element = document.getElementById("email");
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [errors.email]);
 
+  // ✅ FormData พร้อมส่ง (กรอง password ถ้าไม่ได้กรอก)
   const onFormSubmit = (data: FormFields) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) =>
-      formData.append(key, value.toString())
-    );
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "password" && !value) return;
+      if (key === "confirm_password") return;
+      if (key === "last_login" || key === "created_at" || key === "updated_at") return; // ✅ ข้าม field ที่ไม่ควรส่ง
+      formData.append(key, value?.toString() ?? "");
+    });
     onSubmit(formData);
   };
 
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      autoComplete="off"
       className="max-w-xl w-full space-y-5 text-left"
+      autoComplete="off"
     >
-      {/* Avatar Upload */}
+      {/* Avatar */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Avatar
-        </label>
+        <label className="block text-sm font-medium mb-1">Avatar</label>
         <AvatarUpload
           value={avatarPreview}
           onChange={onAvatarChange}
@@ -74,68 +101,65 @@ const UserForm = ({
 
       {/* First Name */}
       <div>
-        <label htmlFor="first_name">First Name</label>
+        <label>First Name</label>
         <input
           {...register("first_name", { required: "First name is required" })}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          className="w-full border px-3 py-2 rounded-md"
         />
-        {errors.first_name && (
+        {errors.first_name && touchedFields.first_name && (
           <p className="text-red-600 text-sm">{errors.first_name.message}</p>
         )}
       </div>
 
       {/* Last Name */}
       <div>
-        <label htmlFor="last_name">Last Name</label>
+        <label>Last Name</label>
         <input
           {...register("last_name", { required: "Last name is required" })}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          className="w-full border px-3 py-2 rounded-md"
         />
-        {errors.last_name && (
+        {errors.last_name && touchedFields.last_name && (
           <p className="text-red-600 text-sm">{errors.last_name.message}</p>
         )}
       </div>
 
       {/* Email */}
       <div>
-        <label htmlFor="email">Email</label>
+        <label>Email</label>
         <input
+          id="email"
           type="email"
-          autoComplete="new-email"
-          inputMode="email"
           {...register("email", { required: "Email is required" })}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          className={`w-full px-3 py-2 border rounded-md ${
+            errors.email ? "border-red-500 bg-red-50" : "border-gray-300"
+          }`}
+          autoComplete="new-email"
         />
-        {errors.email && (
+        {errors.email && touchedFields.email && (
           <p className="text-red-600 text-sm">{errors.email.message}</p>
         )}
       </div>
 
       {/* Password */}
       <div>
-        <label htmlFor="password">Password</label>
+        <label>Password</label>
         <input
           type="password"
           autoComplete="new-password"
-          {...register("password", { required: "Password is required" })}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          {...register("password")}
+          className="w-full border px-3 py-2 rounded-md"
         />
       </div>
 
       {/* Confirm Password */}
       <div>
-        <label htmlFor="confirm_password">Confirm Password</label>
+        <label>Confirm Password</label>
         <input
-            type="password"
-            {...register("confirm_password", {
-              required: "Please confirm password",
-              validate: (value) =>
-                value === watch("password") || "Passwords do not match",
-            })}
-            autoComplete="new-password"
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        {errors.confirm_password && (
+          type="password"
+          {...register("confirm_password")}
+          className="w-full border px-3 py-2 rounded-md"
+        />
+        {errors.confirm_password && touchedFields.confirm_password && (
           <p className="text-red-600 text-sm">
             {errors.confirm_password.message}
           </p>
@@ -145,10 +169,10 @@ const UserForm = ({
       {/* Role */}
       {role === "admin" && (
         <div>
-          <label htmlFor="role_id">Select Role</label>
+          <label>Select Role</label>
           <select
             {...register("role_id")}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className="w-full border px-3 py-2 rounded-md"
           >
             <option value="1">Admin</option>
             <option value="2">Supervisor</option>
@@ -158,14 +182,14 @@ const UserForm = ({
 
       {/* Phone Number */}
       <div>
-        <label htmlFor="phone_number">Phone Number</label>
+        <label>Phone Number</label>
         <input
           {...register("phone_number")}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          className="w-full border px-3 py-2 rounded-md"
         />
       </div>
 
-      {/* Active Checkbox */}
+      {/* Active */}
       <div className="flex items-center gap-2">
         <input
           type="checkbox"
@@ -178,11 +202,11 @@ const UserForm = ({
 
       {/* Note */}
       <div>
-        <label htmlFor="note">Note</label>
+        <label>Note</label>
         <textarea
           {...register("note")}
           rows={3}
-          className="w-full border border-gray-300 rounded-md px-3 py-2"
+          className="w-full border px-3 py-2 rounded-md"
         />
       </div>
 
@@ -192,7 +216,7 @@ const UserForm = ({
           type="submit"
           className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
         >
-          {role === "admin" ? "Add Admin" : "Add Member"}
+          {role === "admin" ? "Save Admin" : "Save Member"}
         </button>
       </div>
     </form>
