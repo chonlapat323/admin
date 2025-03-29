@@ -14,7 +14,6 @@ export default function AddAdminPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
 
   const {
-    setError, // ✅ เอาจาก useForm มาใช้ตรงนี้
   } = useForm(); // 👈 ถ้าใช้แค่ setError ก็ดึงแบบนี้พอ
   const form = useForm<FormFields>();
   const handleAvatarChange = (file: File | null) => {

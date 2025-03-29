@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-
+import Image from "next/image";
 type ImageUploadProps = {
   onChange?: (file: File | null) => void;
   value?: string; // preview URL
@@ -30,7 +30,7 @@ export default function AvatarUpload({ onChange, value, loading }: ImageUploadPr
         onMouseLeave={() => setHover(false)}
       >
         {value ? (
-          <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          <Image src={value} alt="Preview" fill className="w-full h-full object-cover" />
         ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"

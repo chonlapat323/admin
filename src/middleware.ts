@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
     console.log("✅ Token valid → ปล่อยผ่าน");
     return NextResponse.next();
   } catch (err) {
-    console.warn("⚠️ Token หมดอายุ → ปล่อยผ่านให้ frontend refresh");
+    console.warn("⚠️ Token หมดอายุ → ปล่อยผ่านให้ frontend refresh error: "+err);
     return NextResponse.next();
   }
 }

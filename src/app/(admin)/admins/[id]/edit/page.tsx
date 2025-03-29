@@ -39,7 +39,7 @@ export default function EditAdminPage() {
           setAvatarPreview(`${API_URL}${data.avatar_url}`);
         }
       } catch (err) {
-        toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+        toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล error:"+err);
         router.push("/admins");
       } finally {
         setLoading(false);
