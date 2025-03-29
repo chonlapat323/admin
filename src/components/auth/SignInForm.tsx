@@ -8,7 +8,6 @@ import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
 export default function SignInForm() {
   const router = useRouter();
 
@@ -27,7 +26,7 @@ export default function SignInForm() {
     e.preventDefault();
     try {
       // เรียก API /api/login
-      const res = await fetchWithAuth(`${API_URL}/auth/login`, {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

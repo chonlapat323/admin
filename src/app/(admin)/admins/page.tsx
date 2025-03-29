@@ -19,6 +19,7 @@ import Link from "next/link";
 import { deleteAdmin } from "@/lib/api/admin";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 interface AdminUser {
   id: number;
   email: string;
@@ -43,6 +44,8 @@ export default function AdminUserPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const router = useRouter();
+
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -71,6 +74,11 @@ export default function AdminUserPage() {
     setSelectedId(id);
     setShowModal(true);
   };
+
+  const handleEditClick = (id: number) => {
+    router.push(`/admins/${id}/edit`);  
+  };
+  
 
   const handleConfirmDelete = async () => {
     if (selectedId === null) return;
@@ -184,6 +192,7 @@ export default function AdminUserPage() {
                     <TableCell className="px-4 py-3 text-left">
                     <div className="flex items-center gap-3">
                       <Button
+                        onClick={() => handleEditClick(admin.id)}
                         size="sm"
                         variant="outline"
                         startIcon={<PencilIcon />}
