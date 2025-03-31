@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import {  UseFormReturn } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import AvatarUpload from "@/components/ui/upload/AvatarUpload";
 
 export type FormFields = {
@@ -57,7 +57,7 @@ const UserForm = ({
       } else {
         clearErrors("confirm_password");
       }
-    } else { 
+    } else {
       clearErrors("confirm_password");
     }
   }, [password, confirmPassword, setError, clearErrors]);
@@ -65,11 +65,11 @@ const UserForm = ({
   useEffect(() => {
     if (errors.email) {
       setFocus("email");
-  
+
       const element = document.getElementById("email");
       element?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [errors.email,setFocus]);
+  }, [errors.email, setFocus]);
 
   // ✅ FormData พร้อมส่ง (กรอง password ถ้าไม่ได้กรอก)
   const onFormSubmit = (data: FormFields) => {
@@ -92,11 +92,7 @@ const UserForm = ({
       {/* Avatar */}
       <div>
         <label className="block text-sm font-medium mb-1">Avatar</label>
-        <AvatarUpload
-          value={avatarPreview}
-          onChange={onAvatarChange}
-          loading={avatarLoading}
-        />
+        <AvatarUpload value={avatarPreview} onChange={onAvatarChange} loading={avatarLoading} />
       </div>
 
       {/* First Name */}
@@ -160,9 +156,7 @@ const UserForm = ({
           className="w-full border px-3 py-2 rounded-md"
         />
         {errors.confirm_password && touchedFields.confirm_password && (
-          <p className="text-red-600 text-sm">
-            {errors.confirm_password.message}
-          </p>
+          <p className="text-red-600 text-sm">{errors.confirm_password.message}</p>
         )}
       </div>
 
@@ -170,10 +164,7 @@ const UserForm = ({
       {role === "admin" && (
         <div>
           <label>Select Role</label>
-          <select
-            {...register("role_id")}
-            className="w-full border px-3 py-2 rounded-md"
-          >
+          <select {...register("role_id")} className="w-full border px-3 py-2 rounded-md">
             <option value="1">Admin</option>
             <option value="2">Supervisor</option>
           </select>
@@ -183,31 +174,19 @@ const UserForm = ({
       {/* Phone Number */}
       <div>
         <label>Phone Number</label>
-        <input
-          {...register("phone_number")}
-          className="w-full border px-3 py-2 rounded-md"
-        />
+        <input {...register("phone_number")} className="w-full border px-3 py-2 rounded-md" />
       </div>
 
       {/* Active */}
       <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          {...register("is_active")}
-          defaultChecked
-          className="w-4 h-4"
-        />
+        <input type="checkbox" {...register("is_active")} defaultChecked className="w-4 h-4" />
         <label>Active</label>
       </div>
 
       {/* Note */}
       <div>
         <label>Note</label>
-        <textarea
-          {...register("note")}
-          rows={3}
-          className="w-full border px-3 py-2 rounded-md"
-        />
+        <textarea {...register("note")} rows={3} className="w-full border px-3 py-2 rounded-md" />
       </div>
 
       {/* Submit */}

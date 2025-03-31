@@ -1,101 +1,61 @@
+// File: src/app/(admin)/members/page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 import Badge from "@/components/ui/badge/Badge";
-import Pagination from "@/components/tables/Pagination";
 import Button from "@/components/ui/button/Button";
-import { PencilIcon, TrashBinIcon } from "@/icons";
-import { API_URL } from "@/lib/config";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import Link from "next/link";
-import { deleteAdmin } from "@/lib/api/admin";
+import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
-import { toast } from "sonner";
+import { PencilIcon, TrashBinIcon } from "@/icons";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-interface AdminUser {
-  id: number;
-  email: string;
-  first_name?: string;
-  last_name?: string;
-  avatar_url?: string;
-  role_id: number;
-  created_at: string;
-}
+import { toast } from "sonner";
+import { UserRoleMap } from "@/constants/roles";
+import { useMembers } from "@/hooks/useMembers";
+import { deleteMember } from "@/services/member.service";
 
-const UserRoleMap: Record<number, string> = {
-  1: "Admin",
-  2: "Supervisor",
-  3: "Member",
-};
-
-export default function AdminUserPage() {
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function MemberListPage() {
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        setLoading(true);
-        const res = await fetchWithAuth(`${API_URL}/users/admins`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-        setAdmins(data.items || data);
-        setTotalPages(data.totalPages || 1);
-      } catch (err) {
-        console.error("Failed to fetch admins:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { members, loading, totalPages, setMembers } = useMembers(page);
 
-    fetchAdmins();
-  }, [page]);
+  const handleEditClick = (id: number) => {
+    router.push(`/members/${id}/edit`);
+  };
 
   const handleDeleteClick = (id: number) => {
     setSelectedId(id);
     setShowModal(true);
   };
 
-  const handleEditClick = (id: number) => {
-    router.push(`/admins/${id}/edit`);
-  };
-
   const handleConfirmDelete = async () => {
-    if (selectedId === null) return;
-
+    if (!selectedId) return;
     setDeletingId(selectedId);
     setShowModal(false);
-
     try {
-      await deleteAdmin(selectedId);
-      setAdmins((prev) => prev.filter((admin) => admin.id !== selectedId));
-      toast.success("Admin delete successfully!");
-    } catch (error) {
-      toast.error("❌ Delete error:" + error);
+      await deleteMember(selectedId);
+      toast.success("ลบสมาชิกสำเร็จแล้ว");
+      setMembers((prev) => prev.filter((m) => m.id !== selectedId));
+    } catch (err) {
+      toast.error("ลบไม่สำเร็จ");
     } finally {
       setDeletingId(null);
       setSelectedId(null);
     }
   };
 
-  if (!Array.isArray(admins)) {
-    return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;
-  }
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Admin List</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Member List</h2>
         <Link
-          href="/admins/add"
+          href="/members/add"
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition duration-200"
         >
           <svg
@@ -112,7 +72,7 @@ export default function AdminUserPage() {
               d="M16 11V7m0 0V3m0 4h4m-4 0H12m-2 8a4 4 0 100-8 4 4 0 000 8zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"
             />
           </svg>
-          <span className="font-medium">Add Admin</span>
+          <span className="font-medium">Add Member</span>
         </Link>
       </div>
 
@@ -133,12 +93,12 @@ export default function AdminUserPage() {
                 <TableRow>
                   <TableCell className="text-center py-6">กำลังโหลด...</TableCell>
                 </TableRow>
-              ) : admins.length === 0 ? (
+              ) : members.length === 0 ? (
                 <TableRow>
                   <TableCell className="text-center py-6">ไม่พบผู้ดูแลระบบ</TableCell>
                 </TableRow>
               ) : (
-                admins.map((admin) => (
+                members.map((admin) => (
                   <TableRow
                     key={admin.id}
                     className={`transition-opacity duration-300 ${
