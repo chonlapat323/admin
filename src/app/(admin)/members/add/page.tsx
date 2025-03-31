@@ -1,32 +1,27 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import UserForm from "@/components/form/user/UserForm";
-import type { FormFields } from "@/components/form/user/UserForm";
-import { useAdminForm } from "@/hooks/useAdminForm";
-import { createAdmin } from "@/services/admin.service";
+import { useAddMemberForm } from "@/hooks/useAddMemberForm";
+import { createMember } from "@/services/member.service";
 
-export default function AddAdminPage() {
+export default function AddMemberPage() {
   const router = useRouter();
-  const form = useForm<FormFields>();
-  const { setError } = form;
-
-  const { avatarFile, avatarPreview, handleAvatarChange } = useAdminForm();
+  const { form, avatarFile, avatarPreview, handleAvatarChange } = useAddMemberForm();
 
   const handleSubmit = async (formData: FormData) => {
     if (avatarFile) {
       formData.append("avatar", avatarFile);
     }
 
-    const res = await createAdmin(formData);
+    const res = await createMember(formData);
 
     if (!res.ok) {
-      toast.error("Failed to create admin.");
+      toast.error("Failed to create member.");
       if (res.status === 409) {
-        setError("email", {
+        form.setError("email", {
           type: "manual",
           message: "Email นี้ถูกใช้งานแล้ว",
         });
@@ -34,17 +29,17 @@ export default function AddAdminPage() {
       return;
     }
 
-    toast.success("Admin added successfully!");
-    router.push("/admins");
+    toast.success("Member added successfully!");
+    router.push("/members");
   };
 
   return (
     <div className="max-w-2xl">
-      <Breadcrumb items={[{ label: "Admin List", href: "/admins" }, { label: "Add Admin" }]} />
+      <Breadcrumb items={[{ label: "Member List", href: "/members" }, { label: "Add Member" }]} />
       <h1 className="text-2xl font-bold mb-6">Add Admin</h1>
 
       <UserForm
-        role="admin"
+        role="member"
         form={form}
         onSubmit={handleSubmit}
         onAvatarChange={handleAvatarChange}
