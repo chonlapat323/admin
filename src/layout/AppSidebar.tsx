@@ -232,7 +232,10 @@ const AppSidebar: React.FC = () => {
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => path === pathname;
-  const isActive = useCallback((path: string) => path === pathname, [pathname]);
+  const isActive = useCallback(
+    (path: string) => new RegExp(`^${path}(\\/|$)`).test(pathname),
+    [pathname]
+  );
 
   useEffect(() => {
     // Check if the current path matches any submenu item
