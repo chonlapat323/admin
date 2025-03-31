@@ -98,11 +98,11 @@ export default function MemberListPage() {
                   <TableCell className="text-center py-6">ไม่พบผู้ดูแลระบบ</TableCell>
                 </TableRow>
               ) : (
-                members.map((admin) => (
+                members.map((member) => (
                   <TableRow
-                    key={admin.id}
+                    key={member.id}
                     className={`transition-opacity duration-300 ${
-                      deletingId === admin.id ? "opacity-0" : "opacity-100"
+                      deletingId === member.id ? "opacity-0" : "opacity-100"
                     }`}
                   >
                     <TableCell className="px-4 py-3 text-left">
@@ -112,32 +112,33 @@ export default function MemberListPage() {
                             width={40}
                             height={40}
                             src={
-                              `${process.env.NEXT_PUBLIC_API_URL}${admin.avatar_url}` ||
-                              "/images/user/default-avatar.png"
+                              member.avatar_url
+                                ? `${process.env.NEXT_PUBLIC_API_URL}${member.avatar_url}`
+                                : `http://localhost:3000/images/user/owner.jpg`
                             }
-                            alt={admin.first_name || "user"}
+                            alt={`${member.first_name || "User"}'s Avatar`}
                           />
                         </div>
                         <div>
                           <div className="font-medium text-gray-800 dark:text-white/90">
-                            {admin.first_name} {admin.last_name}
+                            {member.first_name} {member.last_name}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {admin.email}
+                            {member.email}
                           </div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-left">
-                      <Badge size="sm">{UserRoleMap[admin.role_id]}</Badge>
+                      <Badge size="sm">{UserRoleMap[member.role_id]}</Badge>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-left">
-                      {new Date(admin.created_at).toLocaleDateString("th-TH")}
+                      {new Date(member.created_at).toLocaleDateString("th-TH")}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-left">
                       <div className="flex items-center gap-3">
                         <Button
-                          onClick={() => handleEditClick(admin.id)}
+                          onClick={() => handleEditClick(member.id)}
                           size="sm"
                           variant="outline"
                           startIcon={<PencilIcon />}
@@ -145,7 +146,7 @@ export default function MemberListPage() {
                           Edit
                         </Button>
                         <Button
-                          onClick={() => handleDeleteClick(admin.id)}
+                          onClick={() => handleDeleteClick(member.id)}
                           size="sm"
                           variant="outline"
                           startIcon={<TrashBinIcon />}

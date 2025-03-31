@@ -3,12 +3,17 @@
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-export const getMembers = async (page: number) => {
-  const res = await fetchWithAuth(`${API_URL}/users/members?page=${page}`, {
+export async function getMembers(page: number) {
+  const res = await fetchWithAuth(`${API_URL}/users?role=member&page=${page}`, {
     credentials: "include",
   });
-  return await res.json();
-};
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch members");
+  }
+
+  return res.json();
+}
 
 export async function getMemberById(id: string) {
   const res = await fetchWithAuth(`${API_URL}/users/${id}`, {

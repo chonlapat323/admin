@@ -23,6 +23,7 @@ type UserFormProps = {
   onAvatarChange?: (file: File | null) => void;
   avatarPreview?: string;
   avatarLoading?: boolean;
+  isSave: boolean;
 };
 
 const UserForm = ({
@@ -32,6 +33,7 @@ const UserForm = ({
   onAvatarChange,
   avatarPreview,
   avatarLoading,
+  isSave,
 }: UserFormProps) => {
   const {
     register,
@@ -82,6 +84,14 @@ const UserForm = ({
     });
     onSubmit(formData);
   };
+
+  const roleNameMap = {
+    admin: "Admin",
+    member: "Member",
+    supervisor: "Supervisor",
+  };
+
+  const buttonLabel = `${!isSave ? "Update" : "Add"} ${roleNameMap[role] || "User"}`;
 
   return (
     <form
@@ -195,7 +205,7 @@ const UserForm = ({
           type="submit"
           className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
         >
-          {role === "admin" ? "Save Admin" : "Save Member"}
+          {buttonLabel}
         </button>
       </div>
     </form>

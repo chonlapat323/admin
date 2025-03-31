@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 import Badge from "@/components/ui/badge/Badge";
@@ -8,57 +8,24 @@ import Pagination from "@/components/tables/Pagination";
 import Button from "@/components/ui/button/Button";
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import { API_URL } from "@/lib/config";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Link from "next/link";
-import { deleteAdmin } from "@/lib/api/admin";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-interface AdminUser {
-  id: number;
-  email: string;
-  first_name?: string;
-  last_name?: string;
-  avatar_url?: string;
-  role_id: number;
-  created_at: string;
-}
 
-const UserRoleMap: Record<number, string> = {
-  1: "Admin",
-  2: "Supervisor",
-  3: "Member",
-};
+import { useAdmins } from "@/hooks/userAdmins";
+import { deleteAdmin } from "@/services/admin.service"; // ✅ Service
+import { UserRoleMap } from "@/constants/roles";
 
 export default function AdminUserPage() {
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        setLoading(true);
-        const res = await fetchWithAuth(`${API_URL}/users/admins`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-        setAdmins(data.items || data);
-        setTotalPages(data.totalPages || 1);
-      } catch (err) {
-        console.error("Failed to fetch admins:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAdmins();
-  }, [page]);
+  // ✅ ดึงข้อมูลจาก hook
+  const { admins, loading, totalPages, setAdmins } = useAdmins(page);
 
   const handleDeleteClick = (id: number) => {
     setSelectedId(id);
@@ -71,16 +38,15 @@ export default function AdminUserPage() {
 
   const handleConfirmDelete = async () => {
     if (selectedId === null) return;
-
     setDeletingId(selectedId);
     setShowModal(false);
 
     try {
       await deleteAdmin(selectedId);
       setAdmins((prev) => prev.filter((admin) => admin.id !== selectedId));
-      toast.success("Admin delete successfully!");
+      toast.success("Admin deleted successfully!");
     } catch (error) {
-      toast.error("❌ Delete error:" + error);
+      toast.error("❌ Delete error: " + error);
     } finally {
       setDeletingId(null);
       setSelectedId(null);
@@ -90,6 +56,7 @@ export default function AdminUserPage() {
   if (!Array.isArray(admins)) {
     return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;
   }
+
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
       <div className="flex justify-between items-center mb-4">
@@ -152,8 +119,9 @@ export default function AdminUserPage() {
                             width={40}
                             height={40}
                             src={
-                              `${process.env.NEXT_PUBLIC_API_URL}${admin.avatar_url}` ||
-                              "/images/user/default-avatar.png"
+                              admin.avatar_url
+                                ? `${API_URL}${admin.avatar_url}`
+                                : "/images/user/default-avatar.png"
                             }
                             alt={admin.first_name || "user"}
                           />
@@ -203,7 +171,6 @@ export default function AdminUserPage() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-6 flex justify-center">
           <Pagination

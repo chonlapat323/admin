@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { FormFields } from "@/components/form/user/UserForm";
 import UserForm from "@/components/form/user/UserForm";
-import { API_URL } from "@/lib/config"; // ✅ ใช้ BASE API URL
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
+
+import { useAdmin } from "@/hooks/useAdmin";
+import { updateAdmin } from "@/services/admin.service";
 
 export default function EditAdminPage() {
   const router = useRouter();
@@ -18,69 +19,33 @@ export default function EditAdminPage() {
   const form = useForm<FormFields>();
   const { reset, setError } = form;
 
-  const [loading, setLoading] = useState(true);
-  const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const { loading, avatarPreview, setAvatarPreview } = useAdmin(adminId, reset);
 
-  // ✅ โหลดข้อมูล admin
-  useEffect(() => {
-    const fetchAdmin = async () => {
-      try {
-        const res = await fetch(`${API_URL}/admins/${adminId}`, {
-          credentials: "include",
-        });
-
-        if (!res.ok) throw new Error("Failed to load admin");
-
-        const data = await res.json();
-        reset(data);
-
-        if (data.avatar_url) {
-          setAvatarPreview(`${API_URL}${data.avatar_url}`);
-        }
-      } catch (err) {
-        toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล error:"+err);
-        router.push("/admins");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAdmin();
-  }, [adminId, reset, router]);
-
-  // ✅ handle avatar change
   const handleAvatarChange = (file: File | null) => {
     setAvatarFile(file);
     if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      console.log(previewUrl);
-      setAvatarPreview(previewUrl);
+      setAvatarPreview(URL.createObjectURL(file));
     } else {
       setAvatarPreview(undefined);
     }
   };
 
-  // ✅ เมื่อ submit
   const handleSubmit = async (formData: FormData) => {
     if (avatarFile) {
-        formData.append("avatar", avatarFile); // ✅ แนบเฉพาะตอนมีจริง
+      formData.append("avatar", avatarFile);
     }
-    const res = await fetchWithAuth(`${API_URL}/admins/${adminId}/update`, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+
+    const res = await updateAdmin(adminId, formData);
+
     if (!res.ok) {
       toast.error("Update failed");
-
       if (res.status === 409) {
         setError("email", {
           type: "manual",
           message: "Email นี้ถูกใช้งานแล้ว",
         });
       }
-
       return;
     }
 
@@ -92,20 +57,16 @@ export default function EditAdminPage() {
 
   return (
     <div className="max-w-2xl">
-    <Breadcrumb
-        items={[
-        { label: "Admin List", href: "/admins" },
-        { label: "Edit Admin" },
-        ]}
-    />
-    <h1 className="text-2xl font-bold mb-6">Edit Admin</h1>
+      <Breadcrumb items={[{ label: "Admin List", href: "/admins" }, { label: "Edit Admin" }]} />
+      <h1 className="text-2xl font-bold mb-6">Edit Admin</h1>
 
-    <UserForm
+      <UserForm
         form={form}
         onSubmit={handleSubmit}
         role="admin"
         avatarPreview={avatarPreview}
         onAvatarChange={handleAvatarChange}
+        isSave={false}
       />
     </div>
   );

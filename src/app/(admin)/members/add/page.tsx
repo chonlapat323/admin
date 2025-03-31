@@ -30,7 +30,7 @@ export default function AddMemberPage() {
     }
 
     toast.success("Member added successfully!");
-    router.push("/admins");
+    router.push("/members");
   };
 
   return (
@@ -44,6 +44,7 @@ export default function AddMemberPage() {
         onSubmit={handleSubmit}
         onAvatarChange={handleAvatarChange}
         avatarPreview={avatarPreview}
+        isSave={true}
       />
     </div>
   );

@@ -10,7 +10,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import { useMember } from "@/hooks/useMember";
 import { updateMember } from "@/services/member.service";
 
-export default function EditAdminPage() {
+export default function EditMemberPage() {
   const router = useRouter();
   const params = useParams();
   const adminId = params.id as string;
@@ -48,23 +48,24 @@ export default function EditAdminPage() {
       return;
     }
 
-    toast.success("Admin updated successfully");
-    router.push("/admins");
+    toast.success("Member updated successfully");
+    router.push("/members");
   };
 
   if (loading) return <p>Loading...</p>;
 
   return (
     <div className="max-w-2xl">
-      <Breadcrumb items={[{ label: "Admin List", href: "/admins" }, { label: "Edit Admin" }]} />
+      <Breadcrumb items={[{ label: "Member List", href: "/members" }, { label: "Edit Member" }]} />
       <h1 className="text-2xl font-bold mb-6">Edit Admin</h1>
 
       <UserForm
         form={form}
         onSubmit={handleSubmit}
-        role="admin"
+        role="member"
         avatarPreview={avatarPreview}
         onAvatarChange={handleAvatarChange}
+        isSave={false}
       />
     </div>
   );
