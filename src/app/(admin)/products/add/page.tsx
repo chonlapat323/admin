@@ -14,7 +14,7 @@ export default function AddProductPage() {
   const createProduct = useCreateProduct();
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-  const handleCreateProduct = async (formData: FormData) => {
+  const handleCreateProduct = async (formData: ProductFormFields) => {
     try {
       await createProduct(formData);
       toast.success("เพิ่มสินค้าสำเร็จแล้ว");

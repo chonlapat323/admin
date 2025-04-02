@@ -14,13 +14,14 @@ export type ProductFormFields = {
   brand: string;
   is_active: boolean;
   tags?: string;
+  imageUrls?: string[];
 };
 
 type ProductFormProps = {
   form: UseFormReturn<ProductFormFields>;
   imageUrls: string[];
   setImageUrls: (urls: string[]) => void;
-  onSubmit: (form: FormData) => void;
+  onSubmit: (form: ProductFormFields) => void;
   isSave: boolean;
 };
 
@@ -32,15 +33,15 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
   } = form;
 
   const onFormSubmit = (data: ProductFormFields) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "discountPrice" && value === undefined) return;
-      formData.append(key, value?.toString() ?? "");
-    });
+    // ✅ เตรียม payload ที่พร้อมส่ง
+    const payload: ProductFormFields = {
+      ...data,
+      tags: data.tags, // ใส่ tags ที่แปลงแล้ว
+      imageUrls, // รับจาก props ด้านนอก
+    };
 
-    imageUrls.forEach((url) => formData.append("imageUrls", url));
-
-    onSubmit(formData);
+    // ✅ ส่งให้ service ไป POST ผ่าน fetchWithAuth
+    onSubmit(payload);
   };
 
   return (

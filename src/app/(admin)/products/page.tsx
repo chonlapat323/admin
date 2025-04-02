@@ -98,63 +98,70 @@ export default function ProductListPage() {
                   <TableCell className="text-center py-6">ไม่พบสินค้า</TableCell>
                 </TableRow>
               ) : (
-                products.map((product) => (
-                  <TableRow
-                    key={product.id}
-                    className={`transition-opacity duration-300 ${
-                      deletingId === product.id ? "opacity-0" : "opacity-100"
-                    }`}
-                  >
-                    <TableCell className="px-4 py-3 text-left">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 overflow-hidden rounded border">
-                          <Image
-                            width={40}
-                            height={40}
-                            src={`${process.env.NEXT_PUBLIC_API_URL}${product.imageUrl}`}
-                            alt={product.name}
-                            className="object-cover"
-                          />
+                products.map((product) => {
+                  const mainImage = product.images.find((img) => img.is_main);
+                  return (
+                    <TableRow
+                      key={product.id}
+                      className={`transition-opacity duration-300 ${
+                        deletingId === product.id ? "opacity-0" : "opacity-100"
+                      }`}
+                    >
+                      <TableCell className="px-4 py-3 text-left">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 overflow-hidden rounded border">
+                            <Image
+                              width={48}
+                              height={48}
+                              src={
+                                mainImage
+                                  ? `${process.env.NEXT_PUBLIC_API_URL}${mainImage.url}`
+                                  : "/no-image.jpg"
+                              }
+                              alt={product.name}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                          <div className="font-medium text-gray-800 dark:text-white/90">
+                            {product.name}
+                          </div>
                         </div>
-                        <div className="font-medium text-gray-800 dark:text-white/90">
-                          {product.name}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-left">{product.price} ฿</TableCell>
+                      <TableCell className="px-4 py-3 text-left">{product.stock}</TableCell>
+                      <TableCell className="px-4 py-3 text-left">
+                        <div className="flex flex-wrap gap-1">
+                          {product.tags.map((tag) => (
+                            <Badge key={tag.id} size="sm">
+                              #{tag.name}
+                            </Badge>
+                          ))}
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-left">{product.price} ฿</TableCell>
-                    <TableCell className="px-4 py-3 text-left">{product.stock}</TableCell>
-                    <TableCell className="px-4 py-3 text-left">
-                      <div className="flex flex-wrap gap-1">
-                        {product.tags.map((tag) => (
-                          <Badge key={tag.id} size="sm">
-                            #{tag.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-left">
-                      <div className="flex items-center gap-3">
-                        <Button
-                          onClick={() => handleEditClick(product.id)}
-                          size="sm"
-                          variant="outline"
-                          startIcon={<PencilIcon />}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteClick(product.id)}
-                          size="sm"
-                          variant="outline"
-                          startIcon={<TrashBinIcon />}
-                          className="!text-red-600 border-red-200 hover:border-red-400 hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-left">
+                        <div className="flex items-center gap-3">
+                          <Button
+                            onClick={() => handleEditClick(product.id)}
+                            size="sm"
+                            variant="outline"
+                            startIcon={<PencilIcon />}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteClick(product.id)}
+                            size="sm"
+                            variant="outline"
+                            startIcon={<TrashBinIcon />}
+                            className="!text-red-600 border-red-200 hover:border-red-400 hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

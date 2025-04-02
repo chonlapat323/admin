@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { getAllProducts, createProduct as createProductService } from "@/services/product.service";
+import { ProductFormFields } from "@/components/form/product/ProductForm";
 
 export interface Tag {
   id: number;
@@ -16,12 +17,18 @@ export interface Variant {
   stock: number;
 }
 
+export interface ProductImage {
+  id: number;
+  url: string;
+  is_main: boolean;
+}
+
 export interface Product {
   id: number;
   name: string;
   price: number;
   stock: number;
-  imageUrl: string;
+  images: ProductImage[];
   tags: Tag[];
   variants: Variant[];
 }
@@ -36,6 +43,7 @@ export function useProducts(page: number = 1) {
       setLoading(true);
       try {
         const res = await getAllProducts(page);
+        console.log(res.data);
         setProducts(res.data);
         setTotalPages(res.pageCount || 1);
       } catch (err) {
@@ -52,7 +60,7 @@ export function useProducts(page: number = 1) {
 }
 
 export function useCreateProduct() {
-  return async (formData: FormData) => {
+  return async (formData: ProductFormFields) => {
     await createProductService(formData);
   };
 }
