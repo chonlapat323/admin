@@ -1,4 +1,3 @@
-// File: src/app/(admin)/products/add/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -7,12 +6,17 @@ import ProductForm, { ProductFormFields } from "@/components/form/product/Produc
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCreateProduct } from "@/hooks/useProducts";
+import { ImageData } from "@/components/ui/upload/MultiImageUpload";
 
 export default function AddProductPage() {
-  const form = useForm<ProductFormFields>({ defaultValues: { is_active: true } });
+  const form = useForm<ProductFormFields>({
+    defaultValues: { is_active: true },
+  });
   const router = useRouter();
   const createProduct = useCreateProduct();
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+  // ✅ ใช้ ImageData[] แทน string[]
+  const [imageUrls, setImageUrls] = useState<ImageData[]>([]);
 
   const handleCreateProduct = async (formData: ProductFormFields) => {
     try {

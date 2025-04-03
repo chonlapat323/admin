@@ -5,6 +5,9 @@
 import { useEffect, useState } from "react";
 import { getAllProducts, createProduct as createProductService } from "@/services/product.service";
 import { ProductFormFields } from "@/components/form/product/ProductForm";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { API_URL } from "@/lib/config";
+import useSWR from "swr";
 
 export interface Tag {
   id: number;
@@ -26,8 +29,13 @@ export interface ProductImage {
 export interface Product {
   id: number;
   name: string;
+  description: string;
   price: number;
+  discountPrice?: number;
   stock: number;
+  sku: string;
+  brand: string;
+  is_active: boolean;
   images: ProductImage[];
   tags: Tag[];
   variants: Variant[];
@@ -43,7 +51,6 @@ export function useProducts(page: number = 1) {
       setLoading(true);
       try {
         const res = await getAllProducts(page);
-        console.log(res.data);
         setProducts(res.data);
         setTotalPages(res.pageCount || 1);
       } catch (err) {
@@ -62,5 +69,29 @@ export function useProducts(page: number = 1) {
 export function useCreateProduct() {
   return async (formData: ProductFormFields) => {
     await createProductService(formData);
+  };
+}
+
+const fetcher = async (url: string) => {
+  const res = await fetchWithAuth(url);
+  return res.json(); // ✅ SWR ต้องการข้อมูล ไม่ใช่ Response
+};
+
+export function useGetProduct(id: number) {
+  return useSWR<Product>(`${API_URL}/products/${id}`, fetcher);
+}
+
+export function useUpdateProduct() {
+  return async (id: number, payload: any) => {
+    const res = await fetchWithAuth(`${API_URL}/products/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("Failed to update product");
+    return res.json();
   };
 }

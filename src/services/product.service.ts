@@ -39,3 +39,15 @@ export async function createProduct(data: ProductFormFields) {
   if (!res.ok) throw new Error("Failed to create product");
   return res.json();
 }
+
+export async function deleteProductImage(imageId: number) {
+  const res = await fetchWithAuth(`${API_URL}/products/images/${imageId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("ลบรูปภาพไม่สำเร็จ");
+  }
+
+  return res.json();
+}
