@@ -58,19 +58,22 @@ export default function ProductListPage() {
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition duration-200"
         >
           <svg
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
+            width="24"
+            height="24"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M16 11V7m0 0V3m0 4h4m-4 0H12m-2 8a4 4 0 100-8 4 4 0 000 8zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 6c0 1.657-3.134 3-7 3S5 7.657 5 6m14 0c0-1.657-3.134-3-7-3S5 4.343 5 6m14 0v6M5 6v6m0 0c0 1.657 3.134 3 7 3s7-1.343 7-3M5 12v6c0 1.657 3.134 3 7 3s7-1.343 7-3v-6"
             />
           </svg>
+
           <span className="font-medium">Add Product</span>
         </Link>
       </div>

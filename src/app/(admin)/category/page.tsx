@@ -1,10 +1,7 @@
-// File: src/app/(admin)/members/page.tsx
 "use client";
 
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
-import Image from "next/image";
-import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
@@ -12,21 +9,20 @@ import { PencilIcon, TrashBinIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { UserRoleMap } from "@/constants/roles";
-import { useMembers } from "@/hooks/useMembers";
-import { deleteMember } from "@/services/member.service";
+import { useCategories } from "@/hooks/useCategories";
+import { deleteCategory } from "@/services/category.service";
 
-export default function MemberListPage() {
+export default function CategoryListPage() {
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
-  const { members, loading, totalPages, setMembers } = useMembers(page);
+  const { categories, loading, totalPages, setCategories } = useCategories(page);
 
   const handleEditClick = (id: number) => {
-    router.push(`/members/${id}/edit`);
+    router.push(`/category/${id}/edit`);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -39,9 +35,9 @@ export default function MemberListPage() {
     setDeletingId(selectedId);
     setShowModal(false);
     try {
-      await deleteMember(selectedId);
-      toast.success("ลบสมาชิกสำเร็จแล้ว");
-      setMembers((prev) => prev.filter((m) => m.id !== selectedId));
+      await deleteCategory(selectedId);
+      toast.success("ลบหมวดหมู่สำเร็จแล้ว");
+      setCategories((prev) => prev.filter((c) => c.id !== selectedId));
     } catch (err) {
       toast.error("ลบไม่สำเร็จ");
     } finally {
@@ -53,9 +49,9 @@ export default function MemberListPage() {
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Member List</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Category List</h2>
         <Link
-          href="/members/add"
+          href="/category/add"
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition duration-200"
         >
           <svg
@@ -71,22 +67,21 @@ export default function MemberListPage() {
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"
             />
           </svg>
 
-          <span className="font-medium">Add Member</span>
+          <span className="font-medium">Add Category</span>
         </Link>
       </div>
 
       <div className="overflow-x-auto">
-        <div className="min-w-[800px]">
+        <div className="min-w-[600px]">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableCell className="px-4 py-3 font-medium text-left">Name</TableCell>
-                <TableCell className="px-4 py-3 font-medium text-left">Role</TableCell>
-                <TableCell className="px-4 py-3 font-medium text-left">Create Date</TableCell>
+                <TableCell className="px-4 py-3 font-medium text-left">Status</TableCell>
                 <TableCell className="px-4 py-3 font-medium text-left">Action</TableCell>
               </TableRow>
             </TableHeader>
@@ -96,52 +91,32 @@ export default function MemberListPage() {
                 <TableRow>
                   <TableCell className="text-center py-6">Loading...</TableCell>
                 </TableRow>
-              ) : members.length === 0 ? (
+              ) : categories.length === 0 ? (
                 <TableRow>
-                  <TableCell className="text-center py-6">Member Not Found</TableCell>
+                  <TableCell className="text-center py-6">No categories found</TableCell>
                 </TableRow>
               ) : (
-                members.map((member) => (
+                categories.map((cat) => (
                   <TableRow
-                    key={member.id}
+                    key={cat.id}
                     className={`transition-opacity duration-300 ${
-                      deletingId === member.id ? "opacity-0" : "opacity-100"
+                      deletingId === cat.id ? "opacity-0" : "opacity-100"
                     }`}
                   >
+                    <TableCell className="px-4 py-3 text-left">{cat.name}</TableCell>
                     <TableCell className="px-4 py-3 text-left">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 overflow-hidden rounded-full border">
-                          <Image
-                            width={40}
-                            height={40}
-                            src={
-                              member.avatar_url
-                                ? `${process.env.NEXT_PUBLIC_API_URL}${member.avatar_url}`
-                                : `http://localhost:3000/images/user/owner.jpg`
-                            }
-                            alt={`${member.first_name || "User"}'s Avatar`}
-                          />
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-800 dark:text-white/90">
-                            {member.first_name} {member.last_name}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {member.email}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-left">
-                      <Badge size="sm">{UserRoleMap[member.role_id]}</Badge>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-left">
-                      {new Date(member.created_at).toLocaleDateString("th-TH")}
+                      <span
+                        className={`px-2 py-1 rounded text-sm font-medium ${
+                          cat.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {cat.is_active ? "Active" : "Inactive"}
+                      </span>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-left">
                       <div className="flex items-center gap-3">
                         <Button
-                          onClick={() => handleEditClick(member.id)}
+                          onClick={() => handleEditClick(cat.id)}
                           size="sm"
                           variant="outline"
                           startIcon={<PencilIcon />}
@@ -149,7 +124,7 @@ export default function MemberListPage() {
                           Edit
                         </Button>
                         <Button
-                          onClick={() => handleDeleteClick(member.id)}
+                          onClick={() => handleDeleteClick(cat.id)}
                           size="sm"
                           variant="outline"
                           startIcon={<TrashBinIcon />}
@@ -167,7 +142,6 @@ export default function MemberListPage() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-6 flex justify-center">
           <Pagination
@@ -180,8 +154,8 @@ export default function MemberListPage() {
 
       <ConfirmModal
         open={showModal}
-        title="Delete Admin?"
-        description="This action cannot be undone. Are you sure you want to delete this admin?"
+        title="Delete Category?"
+        description="This action cannot be undone. Are you sure you want to delete this category?"
         onConfirm={handleConfirmDelete}
         onCancel={() => setShowModal(false)}
       />
