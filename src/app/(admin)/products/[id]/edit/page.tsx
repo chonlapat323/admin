@@ -45,7 +45,7 @@ export default function EditProductPage() {
     try {
       await updateProduct(Number(id), {
         ...data,
-        imageUrls: imageUrls.map((img) => img.url), // ✅ ส่งเฉพาะ url string[]
+        imageUrls: imageUrls.map((img) => (typeof img === "string" ? { url: img } : img)),
       });
       toast.success("แก้ไขสินค้าสำเร็จแล้ว");
       router.push("/products");

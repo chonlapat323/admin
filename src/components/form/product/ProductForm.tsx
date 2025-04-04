@@ -50,8 +50,8 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
         <label className="block text-sm font-medium mb-1">Product Images</label>
         <MultiImageUpload
           maxFiles={4}
-          onImagesChange={(urls) => {
-            const newData = urls.map((url) => ({ url }));
+          onImagesChange={(images) => {
+            const newData = images.map((img) => ({ url: typeof img === "string" ? img : img.url }));
             setImageUrls(newData);
           }}
           initialUrls={!isSave ? imageUrls : undefined}
