@@ -1,8 +1,7 @@
-// File: src/components/products/ProductForm.tsx
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import MultiImageUpload from "@/components/ui/upload/MultiImageUpload";
+import MultiImageUpload, { ImageData } from "@/components/ui/upload/MultiImageUpload";
 
 export type ProductFormFields = {
   name: string;
@@ -19,8 +18,8 @@ export type ProductFormFields = {
 
 type ProductFormProps = {
   form: UseFormReturn<ProductFormFields>;
-  imageUrls: string[];
-  setImageUrls: (urls: string[]) => void;
+  imageUrls: ImageData[];
+  setImageUrls: (urls: ImageData[]) => void;
   onSubmit: (form: ProductFormFields) => void;
   isSave: boolean;
 };
@@ -33,14 +32,11 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
   } = form;
 
   const onFormSubmit = (data: ProductFormFields) => {
-    // ✅ เตรียม payload ที่พร้อมส่ง
     const payload: ProductFormFields = {
       ...data,
-      tags: data.tags, // ใส่ tags ที่แปลงแล้ว
-      imageUrls, // รับจาก props ด้านนอก
+      tags: data.tags,
+      imageUrls: imageUrls.map((img) => img.url),
     };
-
-    // ✅ ส่งให้ service ไป POST ผ่าน fetchWithAuth
     onSubmit(payload);
   };
 
@@ -50,15 +46,19 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
-      {/* Images */}
       <div>
         <label className="block text-sm font-medium mb-1">Product Images</label>
         <MultiImageUpload
           maxFiles={4}
-          onUploadSuccess={(urls) => setImageUrls([...imageUrls, ...urls])}
+          onImagesChange={(images) => {
+            const newData = images.map((img) => ({ url: typeof img === "string" ? img : img.url }));
+            setImageUrls(newData);
+          }}
+          initialUrls={!isSave ? imageUrls : undefined}
         />
       </div>
 
+      {/* ส่วนฟอร์มอื่น ๆ คงเดิม */}
       <div>
         <label>Name</label>
         <input

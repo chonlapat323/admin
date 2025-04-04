@@ -28,14 +28,32 @@ export async function deleteProduct(id: number) {
 }
 
 export async function createProduct(data: ProductFormFields) {
+  const payload = {
+    ...data,
+    imageUrls: data.imageUrls?.map((img) => (typeof img === "string" ? { url: img } : img)),
+  };
+
   const res = await fetchWithAuth(`${API_URL}/products`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 
-  if (!res.ok) throw new Error("Failed to create product");
+  if (!res.ok) throw new Error("Create product failed");
+
+  return res.json();
+}
+
+export async function deleteProductImage(imageId: number) {
+  const res = await fetchWithAuth(`${API_URL}/products/images/${imageId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("ลบรูปภาพไม่สำเร็จ");
+  }
+
   return res.json();
 }

@@ -1,39 +1,71 @@
-// File: src/components/ui/upload/MultiImageUpload.tsx
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useUploadImages } from "@/hooks/ui/useUploadImages";
+import ConfirmModal from "../modal/ConfirmModal";
+import { deleteProductImage } from "@/services/product.service";
+
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+export type ImageData = {
+  id?: number;
+  url: string;
+};
 
 interface MultiImageUploadProps {
   maxFiles?: number;
-  onUploadSuccess: (urls: string[]) => void;
+  onImagesChange: (images: ImageData[]) => void;
+  initialUrls?: ImageData[];
 }
 
-export default function MultiImageUpload({ maxFiles = 5, onUploadSuccess }: MultiImageUploadProps) {
-  const [previews, setPreviews] = useState<string[]>([]);
-  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+export default function MultiImageUpload({
+  maxFiles = 5,
+  onImagesChange,
+  initialUrls = [],
+}: MultiImageUploadProps) {
+  const [images, setImages] = useState<ImageData[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { upload, uploading } = useUploadImages();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  useEffect(() => {
+    if (initialUrls.length > 0) {
+      setImages(initialUrls);
+    }
+  }, [initialUrls]);
 
   const handleFiles = async (files: FileList) => {
-    if (previews.length >= maxFiles) {
+    if (images.length >= maxFiles) {
       toast.warning(`คุณสามารถอัปโหลดได้สูงสุด ${maxFiles} รูป`);
       if (inputRef.current) inputRef.current.value = "";
       return;
     }
 
-    const selected = Array.from(files).slice(0, maxFiles - previews.length);
-    const previewUrls = selected.map((file) => URL.createObjectURL(file));
-    setPreviews((prev) => [...prev, ...previewUrls]);
+    const selected = Array.from(files).slice(0, maxFiles - images.length);
+    const previewUrls = selected.map((file) => ({
+      url: URL.createObjectURL(file),
+    }));
+    setImages((prev) => [...prev, ...previewUrls]);
 
     try {
       const urls = await upload(selected);
-      const newUrls = [...uploadedUrls, ...urls];
-      setUploadedUrls(newUrls);
-      onUploadSuccess(newUrls);
+      const newImages: ImageData[] = urls.map((url) => ({ url }));
+      const updated = [...images, ...newImages];
+      setImages(updated);
+      onImagesChange(updated);
     } catch (err) {
       toast.error("อัปโหลดรูปไม่สำเร็จ");
     } finally {
@@ -41,22 +73,43 @@ export default function MultiImageUpload({ maxFiles = 5, onUploadSuccess }: Mult
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) handleFiles(e.target.files);
+  const askToRemove = (index: number) => {
+    setSelectedIndex(index);
+    setShowConfirm(true);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  const confirmRemove = async () => {
+    if (selectedIndex === null) return;
+
+    const image = images[selectedIndex];
+
+    if (image.url.startsWith("/uploads/products") && image.id) {
+      try {
+        await deleteProductImage(image.id);
+      } catch {
+        toast.error("ลบรูปภาพไม่สำเร็จ");
+      }
+    }
+
+    const newImages = [...images];
+    newImages.splice(selectedIndex, 1);
+    setImages(newImages);
+    onImagesChange(newImages);
+
+    setSelectedIndex(null);
+    setShowConfirm(false);
   };
 
-  const handleRemove = (index: number) => {
-    const newPreviews = previews.filter((_, i) => i !== index);
-    const newUrls = uploadedUrls.filter((_, i) => i !== index);
-    setPreviews(newPreviews);
-    setUploadedUrls(newUrls);
-    onUploadSuccess(newUrls);
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = images.findIndex((img) => img.url === active.id);
+    const newIndex = images.findIndex((img) => img.url === over.id);
+
+    const reordered = arrayMove(images, oldIndex, newIndex);
+    setImages(reordered);
+    onImagesChange(reordered);
   };
 
   return (
@@ -64,12 +117,17 @@ export default function MultiImageUpload({ maxFiles = 5, onUploadSuccess }: Mult
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
         อัปโหลดรูปภาพ
       </label>
-      {uploadedUrls.length >= maxFiles && (
+      {images.length >= maxFiles && (
         <p className="text-sm text-yellow-600 mt-2">คุณได้อัปโหลดครบ {maxFiles} รูปแล้ว</p>
       )}
+
       <div
         onClick={() => inputRef.current?.click()}
-        onDrop={handleDrop}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragOver(false);
+          if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+        }}
         onDragOver={(e) => {
           e.preventDefault();
           setIsDragOver(true);
@@ -85,41 +143,97 @@ export default function MultiImageUpload({ maxFiles = 5, onUploadSuccess }: Mult
           accept="image/*"
           multiple
           hidden
-          onChange={handleInputChange}
+          onChange={(e) => {
+            if (e.target.files) handleFiles(e.target.files);
+          }}
         />
         <p className="text-sm text-gray-500 dark:text-gray-400">
           ลากรูปเข้ามาหรือคลิกเพื่อเลือกไฟล์ (สูงสุด {maxFiles} รูป)
         </p>
 
-        {previews.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-4 mt-4">
-            {previews.map((url, idx) => (
-              <div key={idx} className="relative group w-24 h-24 rounded overflow-hidden">
-                <Image
-                  src={url}
-                  alt={`preview-${idx}`}
-                  width={96}
-                  height={96}
-                  className="object-cover w-full h-full rounded"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemove(idx)}
-                  className="absolute top-1 right-1 text-xs bg-black/70 text-white rounded-full px-2 py-0.5 opacity-0 group-hover:opacity-100 transition"
-                >
-                  ลบ
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {uploadedUrls.length >= maxFiles && (
-          <p className="text-sm text-yellow-600 mt-2">คุณได้อัปโหลดครบ {maxFiles} รูปแล้ว</p>
-        )}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={images.map((img, idx) =>
+              typeof img.url === "string" ? img.url : `image-${idx}`
+            )}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              {images.map((img, idx) => {
+                const key = typeof img.url === "string" ? img.url : `image-${idx}`;
+                return (
+                  <SortableImage key={key} image={img} index={idx} askToRemove={askToRemove} />
+                );
+              })}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {uploading && <p className="text-sm text-blue-500 mt-4">กำลังอัปโหลด...</p>}
       </div>
+
+      <ConfirmModal
+        open={showConfirm}
+        title="ลบรูปภาพนี้หรือไม่?"
+        description="รูปภาพนี้จะถูกลบออกจากรายการ. การกระทำนี้ไม่สามารถย้อนกลับได้"
+        onConfirm={confirmRemove}
+        onCancel={() => {
+          setShowConfirm(false);
+          setSelectedIndex(null);
+        }}
+      />
+    </div>
+  );
+}
+
+function SortableImage({
+  image,
+  index,
+  askToRemove,
+}: {
+  image: ImageData;
+  index: number;
+  askToRemove: (index: number) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: image.url,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const fullUrl =
+    typeof image.url === "string" && (image.url.startsWith("http") || image.url.startsWith("blob:"))
+      ? image.url
+      : `${process.env.NEXT_PUBLIC_API_URL}${image.url}`;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="relative group w-24 h-24 rounded overflow-hidden"
+    >
+      <Image
+        src={fullUrl}
+        alt="preview"
+        width={96}
+        height={96}
+        className="object-cover w-full h-full rounded"
+      />
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          askToRemove(index);
+        }}
+        className="absolute top-1 right-1 text-xs bg-black/70 text-white rounded-full px-2 py-0.5 opacity-0 group-hover:opacity-100 transition"
+      >
+        ลบ
+      </button>
     </div>
   );
 }
