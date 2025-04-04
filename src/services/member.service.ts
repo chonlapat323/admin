@@ -28,7 +28,7 @@ export async function getMemberById(id: string) {
 }
 
 export const createMember = async (formData: FormData) => {
-  return await fetchWithAuth("http://localhost:3001/users", {
+  return await fetchWithAuth(`${API_URL}/users`, {
     method: "POST",
     body: formData,
     credentials: "include",

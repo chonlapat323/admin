@@ -14,6 +14,7 @@ export async function getAdmins(page: number) {
 }
 
 export async function createAdmin(formData: FormData) {
+  console.log(formData);
   const res = await fetchWithAuth(`${API_URL}/admins`, {
     method: "POST",
     credentials: "include",

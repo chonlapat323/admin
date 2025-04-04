@@ -30,12 +30,8 @@ export default function EditProductPage() {
         tags: product.tags?.map((tag) => tag.name).join(",") || "",
       });
 
-      // ✅ map รูปเป็น ImageData
       const imageData: ImageData[] =
-        product.images?.map((img) => ({
-          id: img.id,
-          url: img.url,
-        })) || [];
+        product.images?.map((img) => ({ id: img.id, url: img.url })) || [];
 
       setImageUrls(imageData);
     }

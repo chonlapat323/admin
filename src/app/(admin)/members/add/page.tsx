@@ -36,7 +36,7 @@ export default function AddMemberPage() {
   return (
     <div className="max-w-2xl">
       <Breadcrumb items={[{ label: "Member List", href: "/members" }, { label: "Add Member" }]} />
-      <h1 className="text-2xl font-bold mb-6">Add Admin</h1>
+      <h1 className="text-2xl font-bold mb-6">Add Member</h1>
 
       <UserForm
         role="member"

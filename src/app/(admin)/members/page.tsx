@@ -91,11 +91,11 @@ export default function MemberListPage() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell className="text-center py-6">กำลังโหลด...</TableCell>
+                  <TableCell className="text-center py-6">Loading...</TableCell>
                 </TableRow>
               ) : members.length === 0 ? (
                 <TableRow>
-                  <TableCell className="text-center py-6">ไม่พบผู้ดูแลระบบ</TableCell>
+                  <TableCell className="text-center py-6">Member Not Found</TableCell>
                 </TableRow>
               ) : (
                 members.map((member) => (
