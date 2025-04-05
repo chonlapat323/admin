@@ -39,7 +39,7 @@ const navItems: NavItem[] = [
   {
     icon: <ListIcon />,
     name: "Category",
-    path: "/category",
+    path: "/categories",
   },
   {
     icon: <BoxIcon />,
