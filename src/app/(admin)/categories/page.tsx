@@ -22,7 +22,7 @@ export default function CategoryListPage() {
   const { categories, loading, totalPages, setCategories } = useCategories(page);
 
   const handleEditClick = (id: number) => {
-    router.push(`/category/${id}/edit`);
+    router.push(`/categories/${id}/edit`);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -51,7 +51,7 @@ export default function CategoryListPage() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold text-gray-800">Category List</h2>
         <Link
-          href="/category/add"
+          href="/categories/add"
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition duration-200"
         >
           <BoxIconLine />
@@ -64,6 +64,7 @@ export default function CategoryListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableCell>Image</TableCell>
                 <TableCell className="px-4 py-3 font-medium text-left">Name</TableCell>
                 <TableCell className="px-4 py-3 font-medium text-left">Status</TableCell>
                 <TableCell className="px-4 py-3 font-medium text-left">Action</TableCell>
@@ -87,6 +88,13 @@ export default function CategoryListPage() {
                       deletingId === cat.id ? "opacity-0" : "opacity-100"
                     }`}
                   >
+                    <TableCell>
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL}${cat.image}`}
+                        alt={cat.name}
+                        className="w-12 h-12 object-cover rounded-md border"
+                      />
+                    </TableCell>
                     <TableCell className="px-4 py-3 text-left">{cat.name}</TableCell>
                     <TableCell className="px-4 py-3 text-left">
                       <span
