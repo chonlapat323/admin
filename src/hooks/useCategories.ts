@@ -9,21 +9,21 @@ export function useCategories(page: number) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchCategories = async () => {
       setLoading(true);
       try {
         const res = await getCategories(page);
         setCategories(res.data);
-        setTotalPages(res.pageCount); // <- อย่าลืมตั้งตรงนี้
+        setTotalPages(res.pageCount || 1);
       } catch (err) {
-        console.error("Error fetching categories", err);
+        console.error("Failed to fetch categories", err);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    fetchData();
+    fetchCategories();
   }, [page]);
 
-  return { categories, setCategories, totalPages, loading };
+  return { categories, setCategories, loading, totalPages };
 }
