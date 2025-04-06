@@ -34,13 +34,13 @@ export default function AddCategoryPage() {
     }
 
     toast.success("Category added successfully!");
-    router.push("/category");
+    router.push("/categories");
   };
 
   return (
     <div className="max-w-2xl">
       <Breadcrumb
-        items={[{ label: "Category List", href: "/category" }, { label: "Add Category" }]}
+        items={[{ label: "Category List", href: "/categories" }, { label: "Add Category" }]}
       />
       <h1 className="text-2xl font-bold mb-6">Add Category</h1>
 

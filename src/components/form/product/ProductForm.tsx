@@ -2,8 +2,11 @@
 
 import { UseFormReturn } from "react-hook-form";
 import MultiImageUpload, { ImageData } from "@/components/ui/upload/MultiImageUpload";
+import { useAllCategories } from "@/hooks/useAllCategories";
+import Select from "../Select";
 
 export type ProductFormFields = {
+  category_id: number;
   name: string;
   description: string;
   price: number;
@@ -28,9 +31,11 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, touchedFields },
   } = form;
-
+  const { categories, loading } = useAllCategories();
   const onFormSubmit = (data: ProductFormFields) => {
     const payload: ProductFormFields = {
       ...data,
@@ -40,12 +45,27 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
     onSubmit(payload);
   };
 
+  const categoryOptions = categories.map((cat) => ({
+    value: cat.id.toString(),
+    label: cat.name,
+  }));
+
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
+      <div>
+        <label>Category</label>
+        <Select
+          options={categoryOptions}
+          placeholder="Select a category"
+          value={watch("category_id")?.toString() ?? ""}
+          onChange={(val) => setValue("category_id", parseInt(val))}
+          className="dark:bg-dark-900"
+        />
+      </div>
       <div>
         <label className="block text-sm font-medium mb-1">Product Images</label>
         <MultiImageUpload
