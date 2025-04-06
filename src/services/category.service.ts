@@ -3,6 +3,11 @@ import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Category } from "@/types/category";
 
+export async function getAllCategories() {
+  const res = await fetchWithAuth(`${API_URL}/categories/all`);
+  return res.json();
+}
+
 export async function getCategories(page: number = 1) {
   const res = await fetch(`${API_URL}/categories/paginated?page=${page}`, {
     method: "GET",

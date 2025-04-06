@@ -28,6 +28,7 @@ export default function EditProductPage() {
         brand: product.brand,
         is_active: product.is_active,
         tags: product.tags?.map((tag) => tag.name).join(",") || "",
+        category_id: product.category.id,
       });
 
       const imageData: ImageData[] =
@@ -38,6 +39,8 @@ export default function EditProductPage() {
   }, [product, form]);
 
   const handleUpdateProduct = async (data: ProductFormFields) => {
+    console.log(data);
+    debugger;
     try {
       await updateProduct(Number(id), {
         ...data,
