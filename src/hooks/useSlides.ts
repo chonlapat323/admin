@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getSlides } from "@/services/slide.service";
+import { createSlide, getSlides } from "@/services/slide.service";
+import { SlideFormFields } from "@/components/form/slide/SlideForm";
 
 export function useSlides(page: number = 1) {
   const [slides, setSlides] = useState<any[]>([]);
@@ -20,4 +21,10 @@ export function useSlides(page: number = 1) {
   }, [page]);
 
   return { slides, loading, totalPages, setSlides };
+}
+
+export function useCreateSlide() {
+  return async (formData: SlideFormFields) => {
+    await createSlide(formData);
+  };
 }
