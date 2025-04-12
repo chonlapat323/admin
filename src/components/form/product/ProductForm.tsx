@@ -2,24 +2,10 @@
 
 import { UseFormReturn } from "react-hook-form";
 import MultiImageUpload, { ImageData } from "@/components/ui/upload/MultiImageUpload";
-import { useAllCategories } from "@/hooks/useAllCategories";
 import Select from "../Select";
 import { toast } from "sonner";
 import { Category } from "@/types/category";
-
-export type ProductFormFields = {
-  category_id: number;
-  name: string;
-  description: string;
-  price: number;
-  discountPrice?: number;
-  stock: number;
-  sku: string;
-  brand: string;
-  is_active: boolean;
-  tags?: string;
-  imageUrls?: ImageData[];
-};
+import { ProductFormFields } from "@/types/products/product-form";
 
 type ProductFormProps = {
   form: UseFormReturn<ProductFormFields>;
@@ -28,6 +14,8 @@ type ProductFormProps = {
   onSubmit: (form: ProductFormFields) => void;
   isSave: boolean;
   categories: Category[];
+  deletedCategoryId: number | null;
+  loading?: boolean; // ✅ เพิ่ม prop นี้
 };
 
 const ProductForm = ({
@@ -37,7 +25,17 @@ const ProductForm = ({
   onSubmit,
   isSave,
   categories,
+  deletedCategoryId,
+  loading,
 }: ProductFormProps) => {
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <p className="text-gray-500">กำลังโหลดข้อมูล...</p>
+      </div>
+    );
+  }
+
   const {
     register,
     handleSubmit,
@@ -46,6 +44,7 @@ const ProductForm = ({
     formState: { errors, touchedFields },
   } = form;
   const currentCategoryId = watch("category_id");
+
   const onFormSubmit = (data: ProductFormFields) => {
     const selected = categories.find((cat) => cat.id === data.category_id);
     if (selected?.deleted_at) {
@@ -59,9 +58,7 @@ const ProductForm = ({
     };
     onSubmit(payload);
   };
-
-  const selectedCategory = categories.find((cat) => cat.id === currentCategoryId);
-  const isCategoryDeleted = !!selectedCategory?.deleted_at;
+  const isCategoryDeleted = !!deletedCategoryId;
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
@@ -75,6 +72,7 @@ const ProductForm = ({
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
+      {loading}
       <div>
         <label className="block text-sm font-medium mb-1">Category</label>
         <Select
@@ -94,7 +92,7 @@ const ProductForm = ({
         {errors.category_id && (
           <p className="text-red-600 text-sm mt-1">{errors.category_id.message}</p>
         )}
-        {!categories.find((cat) => cat.id === watch("category_id")) && (
+        {isCategoryDeleted && (
           <p className="text-red-600 text-sm mt-1">หมวดหมู่เดิมถูกลบ กรุณาเลือกหมวดหมู่ใหม่</p>
         )}
       </div>
