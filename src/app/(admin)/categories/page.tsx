@@ -7,44 +7,22 @@ import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { BoxIconLine, PencilIcon, TrashBinIcon } from "@/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useCategories } from "@/hooks/useCategories";
-import { deleteCategory } from "@/services/category.service";
 
 export default function CategoryListPage() {
   const [page, setPage] = useState(1);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
 
-  const { categories, loading, totalPages, setCategories } = useCategories(page);
-
-  const handleEditClick = (id: number) => {
-    router.push(`/categories/${id}/edit`);
-  };
-
-  const handleDeleteClick = (id: number) => {
-    setSelectedId(id);
-    setShowModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!selectedId) return;
-    setDeletingId(selectedId);
-    setShowModal(false);
-    try {
-      await deleteCategory(selectedId);
-      toast.success("ลบหมวดหมู่สำเร็จแล้ว");
-      setCategories((prev) => prev.filter((c) => c.id !== selectedId));
-    } catch (err) {
-      toast.error("ลบไม่สำเร็จ");
-    } finally {
-      setDeletingId(null);
-      setSelectedId(null);
-    }
-  };
+  const {
+    categories,
+    loading,
+    totalPages,
+    deletingId,
+    showModal,
+    setShowModal,
+    handleEditClick,
+    handleDeleteClick,
+    handleConfirmDelete,
+  } = useCategories(page);
 
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">

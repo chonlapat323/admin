@@ -2,22 +2,10 @@
 
 import { UseFormReturn } from "react-hook-form";
 import MultiImageUpload, { ImageData } from "@/components/ui/upload/MultiImageUpload";
-import { useAllCategories } from "@/hooks/useAllCategories";
 import Select from "../Select";
-
-export type ProductFormFields = {
-  category_id: number;
-  name: string;
-  description: string;
-  price: number;
-  discountPrice?: number;
-  stock: number;
-  sku: string;
-  brand: string;
-  is_active: boolean;
-  tags?: string;
-  imageUrls?: string[];
-};
+import { toast } from "sonner";
+import { Category } from "@/types/category";
+import { ProductFormFields } from "@/types/products/product-form";
 
 type ProductFormProps = {
   form: UseFormReturn<ProductFormFields>;
@@ -25,9 +13,29 @@ type ProductFormProps = {
   setImageUrls: (urls: ImageData[]) => void;
   onSubmit: (form: ProductFormFields) => void;
   isSave: boolean;
+  categories: Category[];
+  deletedCategoryId: number | null;
+  loading?: boolean; // ✅ เพิ่ม prop นี้
 };
 
-const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: ProductFormProps) => {
+const ProductForm = ({
+  form,
+  imageUrls,
+  setImageUrls,
+  onSubmit,
+  isSave,
+  categories,
+  deletedCategoryId,
+  loading,
+}: ProductFormProps) => {
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <p className="text-gray-500">กำลังโหลดข้อมูล...</p>
+      </div>
+    );
+  }
+
   const {
     register,
     handleSubmit,
@@ -35,19 +43,27 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
     watch,
     formState: { errors, touchedFields },
   } = form;
-  const { categories, loading } = useAllCategories();
+  const currentCategoryId = watch("category_id");
+
   const onFormSubmit = (data: ProductFormFields) => {
+    const selected = categories.find((cat) => cat.id === data.category_id);
+    if (selected?.deleted_at) {
+      toast.error("หมวดหมู่นี้ถูกลบแล้ว กรุณาเลือกใหม่");
+      return;
+    }
     const payload: ProductFormFields = {
       ...data,
       tags: data.tags,
-      imageUrls: imageUrls.map((img) => img.url),
+      imageUrls: imageUrls.map((img) => (typeof img === "string" ? { url: img } : img)),
     };
     onSubmit(payload);
   };
+  const isCategoryDeleted = !!deletedCategoryId;
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
-    label: cat.name,
+    label: `${cat.name}${cat.deleted_at ? " (ลบแล้ว)" : ""}`,
+    disabled: !!cat.deleted_at && cat.id !== currentCategoryId,
   }));
 
   return (
@@ -56,15 +72,29 @@ const ProductForm = ({ form, imageUrls, setImageUrls, onSubmit, isSave }: Produc
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
+      {loading}
       <div>
-        <label>Category</label>
+        <label className="block text-sm font-medium mb-1">Category</label>
         <Select
           options={categoryOptions}
           placeholder="Select a category"
-          value={watch("category_id")?.toString() ?? ""}
-          onChange={(val) => setValue("category_id", parseInt(val))}
-          className="dark:bg-dark-900"
+          value={currentCategoryId?.toString() ?? ""}
+          onChange={(val) => setValue("category_id", parseInt(val), { shouldValidate: true })}
+          className={`dark:bg-dark-900 ${isCategoryDeleted ? "border-red-500 ring-red-500" : ""}`}
         />
+        <input
+          type="hidden"
+          {...register("category_id", {
+            required: "กรุณาเลือกหมวดหมู่",
+          })}
+        />
+
+        {errors.category_id && (
+          <p className="text-red-600 text-sm mt-1">{errors.category_id.message}</p>
+        )}
+        {isCategoryDeleted && (
+          <p className="text-red-600 text-sm mt-1">หมวดหมู่เดิมถูกลบ กรุณาเลือกหมวดหมู่ใหม่</p>
+        )}
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">Product Images</label>

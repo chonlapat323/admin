@@ -22,12 +22,14 @@ export type ImageData = {
 };
 
 interface MultiImageUploadProps {
+  type?: "product" | "slide";
   maxFiles?: number;
   onImagesChange: (images: ImageData[]) => void;
   initialUrls?: ImageData[];
 }
 
 export default function MultiImageUpload({
+  type = "product",
   maxFiles = 5,
   onImagesChange,
   initialUrls = [],
@@ -61,7 +63,7 @@ export default function MultiImageUpload({
     setImages((prev) => [...prev, ...previewUrls]);
 
     try {
-      const urls = await upload(selected);
+      const urls = await upload(selected, type);
       const newImages: ImageData[] = urls.map((url) => ({ url }));
       const updated = [...images, ...newImages];
       setImages(updated);

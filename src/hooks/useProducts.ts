@@ -84,9 +84,7 @@ export function useGetProduct(id: number) {
 }
 
 export function useUpdateProduct() {
-  return async (id: number, payload: any) => {
-    console.log(payload);
-    debugger;
+  return async (id: number, payload: ProductFormFields) => {
     const res = await fetchWithAuth(`${API_URL}/products/${id}`, {
       method: "PATCH",
       headers: {

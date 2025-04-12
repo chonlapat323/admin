@@ -4,7 +4,16 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Category } from "@/types/category";
 
 export async function getAllCategories() {
-  const res = await fetchWithAuth(`${API_URL}/categories/all`);
+  const res = await fetchWithAuth(`${API_URL}/categories/active`);
+  return res.json();
+}
+
+export async function getAllCategoriesWithDeleted() {
+  const res = await fetch(`${API_URL}/categories/all`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch categories");
   return res.json();
 }
 

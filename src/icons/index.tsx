@@ -52,6 +52,7 @@ import ChatIcon from "./chat.svg";
 import MoreDotIcon from "./more-dot.svg";
 import BellIcon from "./bell.svg";
 import Category from "./category.svg";
+import ImageIcon from "./image-solid.svg";
 export {
   DownloadIcon,
   BellIcon,
@@ -107,4 +108,5 @@ export {
   ChevronUpIcon,
   ChatIcon,
   Category,
+  ImageIcon,
 };
