@@ -40,7 +40,6 @@ export default function MultiImageUpload({
   const { upload, uploading } = useUploadImages();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
-
   const sensors = useSensors(useSensor(PointerSensor));
 
   useEffect(() => {
@@ -215,24 +214,26 @@ function SortableImage({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
       className="relative group w-24 h-24 rounded overflow-hidden"
     >
-      <Image
-        src={fullUrl}
-        alt="preview"
-        width={96}
-        height={96}
-        className="object-cover w-full h-full rounded"
-      />
+      <div {...attributes} {...listeners} className="w-full h-full">
+        <Image
+          src={fullUrl}
+          alt="preview"
+          width={96}
+          height={96}
+          className="object-cover w-full h-full rounded"
+        />
+      </div>
+
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
+          console.log("🧨 ลบ index", index); // ทดสอบตรงนี้
           askToRemove(index);
         }}
-        className="absolute top-1 right-1 text-xs bg-black/70 text-white rounded-full px-2 py-0.5 opacity-0 group-hover:opacity-100 transition"
+        className="absolute top-1 right-1 z-10 text-xs bg-black/70 text-white rounded-full px-2 py-0.5 opacity-100 transition"
       >
         ลบ
       </button>
