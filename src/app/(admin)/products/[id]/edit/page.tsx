@@ -7,15 +7,25 @@ import { toast } from "sonner";
 import ProductForm, { ProductFormFields } from "@/components/form/product/ProductForm";
 import { useGetProduct, useUpdateProduct } from "@/hooks/useProducts";
 import { ImageData } from "@/components/ui/upload/MultiImageUpload";
+import { useAllCategories } from "@/hooks/useAllCategories";
 
 export default function EditProductPage() {
   const { id } = useParams();
   const router = useRouter();
   const form = useForm<ProductFormFields>();
+  const { setValue } = form;
   const [imageUrls, setImageUrls] = useState<ImageData[]>([]);
   const { data: product, isLoading } = useGetProduct(Number(id));
   const updateProduct = useUpdateProduct();
-
+  const { categories, loading } = useAllCategories();
+  useEffect(() => {
+    if (product && categories.length > 0) {
+      const category = categories.find((c) => c.id === product.category?.id);
+      if (category) {
+        setValue("category_id", category.id, { shouldValidate: true });
+      }
+    }
+  }, [product, categories, setValue]);
   useEffect(() => {
     if (product) {
       form.reset({
@@ -28,7 +38,9 @@ export default function EditProductPage() {
         brand: product.brand,
         is_active: product.is_active,
         tags: product.tags?.map((tag) => tag.name).join(",") || "",
-        category_id: product.category.id,
+        category_id: categories.find((c) => c.id === product.category?.id)
+          ? product.category.id
+          : undefined,
       });
 
       const imageData: ImageData[] =
@@ -39,8 +51,6 @@ export default function EditProductPage() {
   }, [product, form]);
 
   const handleUpdateProduct = async (data: ProductFormFields) => {
-    console.log(data);
-    debugger;
     try {
       await updateProduct(Number(id), {
         ...data,
@@ -65,6 +75,7 @@ export default function EditProductPage() {
           setImageUrls={setImageUrls}
           onSubmit={handleUpdateProduct}
           isSave={false}
+          categories={categories}
         />
       )}
     </div>

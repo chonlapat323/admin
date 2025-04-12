@@ -10,48 +10,21 @@ import { PencilIcon, TrashBinIcon, UserIcon } from "@/icons";
 import { API_URL } from "@/lib/config";
 import Link from "next/link";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-
-import { useAdmins } from "@/hooks/userAdmins";
-import { deleteAdmin } from "@/services/admin.service"; // ✅ Service
+import { useAdmins } from "@/hooks/admins/useAdmins";
 import { UserRoleMap } from "@/constants/roles";
+import { useAdminList } from "@/hooks/admins/useAdminList";
 
 export default function AdminUserPage() {
   const [page, setPage] = useState(1);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
-
-  // ✅ ดึงข้อมูลจาก hook
   const { admins, loading, totalPages, setAdmins } = useAdmins(page);
-
-  const handleDeleteClick = (id: number) => {
-    setSelectedId(id);
-    setShowModal(true);
-  };
-
-  const handleEditClick = (id: number) => {
-    router.push(`/admins/${id}/edit`);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (selectedId === null) return;
-    setDeletingId(selectedId);
-    setShowModal(false);
-
-    try {
-      await deleteAdmin(selectedId);
-      setAdmins((prev) => prev.filter((admin) => admin.id !== selectedId));
-      toast.success("Admin deleted successfully!");
-    } catch (error) {
-      toast.error("❌ Delete error: " + error);
-    } finally {
-      setDeletingId(null);
-      setSelectedId(null);
-    }
-  };
+  const {
+    deletingId,
+    showModal,
+    handleDeleteClick,
+    handleEditClick,
+    handleConfirmDelete,
+    setShowModal,
+  } = useAdminList(setAdmins);
 
   if (!Array.isArray(admins)) {
     return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;

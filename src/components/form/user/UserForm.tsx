@@ -3,18 +3,7 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import AvatarUpload from "@/components/ui/upload/AvatarUpload";
-
-export type FormFields = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password?: string;
-  confirm_password?: string;
-  role_id: string;
-  phone_number?: string;
-  is_active: boolean;
-  note?: string;
-};
+import { FormFields } from "@/types/user-form";
 
 type UserFormProps = {
   form: UseFormReturn<FormFields>;
@@ -48,7 +37,6 @@ const UserForm = ({
   const password = watch("password");
   const confirmPassword = watch("confirm_password");
 
-  // ✅ เช็ค password match เฉพาะตอนที่มีค่า
   useEffect(() => {
     if (password || confirmPassword) {
       if (password !== confirmPassword) {
@@ -73,7 +61,6 @@ const UserForm = ({
     }
   }, [errors.email, setFocus]);
 
-  // ✅ FormData พร้อมส่ง (กรอง password ถ้าไม่ได้กรอก)
   const onFormSubmit = (data: FormFields) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
@@ -99,13 +86,11 @@ const UserForm = ({
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
-      {/* Avatar */}
       <div>
         <label className="block text-sm font-medium mb-1">Avatar</label>
         <AvatarUpload value={avatarPreview} onChange={onAvatarChange} loading={avatarLoading} />
       </div>
 
-      {/* First Name */}
       <div>
         <label>First Name</label>
         <input
@@ -117,7 +102,6 @@ const UserForm = ({
         )}
       </div>
 
-      {/* Last Name */}
       <div>
         <label>Last Name</label>
         <input
@@ -129,7 +113,6 @@ const UserForm = ({
         )}
       </div>
 
-      {/* Email */}
       <div>
         <label>Email</label>
         <input
@@ -146,7 +129,6 @@ const UserForm = ({
         )}
       </div>
 
-      {/* Password */}
       <div>
         <label>Password</label>
         <input
@@ -157,7 +139,6 @@ const UserForm = ({
         />
       </div>
 
-      {/* Confirm Password */}
       <div>
         <label>Confirm Password</label>
         <input
@@ -170,7 +151,6 @@ const UserForm = ({
         )}
       </div>
 
-      {/* Role */}
       {role === "admin" && (
         <div>
           <label>Select Role</label>
@@ -181,25 +161,21 @@ const UserForm = ({
         </div>
       )}
 
-      {/* Phone Number */}
       <div>
         <label>Phone Number</label>
         <input {...register("phone_number")} className="w-full border px-3 py-2 rounded-md" />
       </div>
 
-      {/* Active */}
       <div className="flex items-center gap-2">
         <input type="checkbox" {...register("is_active")} defaultChecked className="w-4 h-4" />
         <label>Active</label>
       </div>
 
-      {/* Note */}
       <div>
         <label>Note</label>
         <textarea {...register("note")} rows={3} className="w-full border px-3 py-2 rounded-md" />
       </div>
 
-      {/* Submit */}
       <div>
         <button
           type="submit"

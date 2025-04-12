@@ -5,4 +5,5 @@ export interface Category {
   is_active: boolean;
   image: string;
   created_at: string;
+  deleted_at: string;
 }

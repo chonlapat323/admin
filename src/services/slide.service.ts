@@ -1,7 +1,7 @@
 // File: services/slide.service.ts
-import { SlideFormFields } from "@/components/form/slide/SlideForm";
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { SlideFormFields } from "@/types/slide";
 
 export async function getSlides(page: number = 1) {
   const res = await fetchWithAuth(`${API_URL}/slides?page=${page}`, {
@@ -31,6 +31,28 @@ export async function createSlide(data: SlideFormFields) {
   }
 
   return res.json();
+}
+
+export async function getSlide(id: string): Promise<any> {
+  const res = await fetchWithAuth(`${API_URL}/slides/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch slide");
+
+  return res.json();
+}
+
+export async function updateSlide(id: number, data: any): Promise<void> {
+  const res = await fetchWithAuth(`${API_URL}/slides/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText);
+  }
 }
 
 export async function deleteSlide(id: number) {

@@ -2,14 +2,7 @@
 
 import { UseFormReturn } from "react-hook-form";
 import MultiImageUpload, { ImageData } from "@/components/ui/upload/MultiImageUpload";
-
-export type SlideFormFields = {
-  title: string;
-  description?: string;
-  is_default: boolean;
-  is_active: boolean;
-  imageUrls?: string[];
-};
+import { SlideFormFields } from "@/types/slide";
 
 type SlideFormProps = {
   form: UseFormReturn<SlideFormFields>;
@@ -35,7 +28,7 @@ export default function SlideForm({
   const onFormSubmit = (data: SlideFormFields) => {
     const payload: SlideFormFields = {
       ...data,
-      imageUrls: imageUrls.map((img) => img.url),
+      imageUrls: imageUrls.map((img) => (typeof img === "string" ? { url: img } : img)),
     };
     onSubmit(payload);
   };
