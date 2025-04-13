@@ -7,6 +7,7 @@ import AvatarUpload from "@/components/ui/upload/AvatarUpload";
 export type CategoryFormFields = {
   name: string;
   description?: string;
+  link?: string;
   is_active: boolean;
 };
 
@@ -74,6 +75,19 @@ const CategoryForm = ({
           {...register("description")}
           rows={3}
           className="w-full border px-3 py-2 rounded-md"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="link" className="block font-medium text-sm text-gray-700">
+          ลิงก์ (เช่น bedroom)
+        </label>
+        <input
+          type="text"
+          id="link"
+          {...register("link")}
+          className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+          placeholder="living-room"
         />
       </div>
 

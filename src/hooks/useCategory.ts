@@ -21,6 +21,7 @@ export function useCategory(id: string, reset: UseFormReset<CategoryFormFields>)
           name: res.name,
           description: res.description || "",
           is_active: res.is_active,
+          link: res.link,
         });
 
         setImagePreview(res.image ? `${process.env.NEXT_PUBLIC_API_URL}${res.image}` : undefined);
