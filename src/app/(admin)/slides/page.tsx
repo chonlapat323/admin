@@ -85,7 +85,13 @@ export default function SlideListPage() {
                 </TableRow>
               ) : (
                 slides.map((slide) => {
-                  const mainImage = slide.images.find((img) => img.order_image === 0);
+                  const mainImage = slide.images?.find((img) => img.order_image === 0);
+                  const fullImageUrl =
+                    mainImage?.url && mainImage.url.startsWith("http")
+                      ? mainImage.url
+                      : mainImage?.url
+                        ? `${process.env.NEXT_PUBLIC_API_URL}${mainImage.url}`
+                        : null;
                   return (
                     <TableRow
                       key={slide.id}
@@ -95,13 +101,15 @@ export default function SlideListPage() {
                     >
                       <TableCell className="px-4 py-3 text-left">
                         <div className="w-32 h-20 overflow-hidden rounded border">
-                          <Image
-                            width={128}
-                            height={80}
-                            src={`${process.env.NEXT_PUBLIC_API_URL}${mainImage?.url}`}
-                            alt={slide.title || "Slide Image"}
-                            className="object-cover w-full h-full"
-                          />
+                          {fullImageUrl && (
+                            <Image
+                              width={128}
+                              height={80}
+                              src={`${process.env.NEXT_PUBLIC_API_URL}${mainImage?.url}`}
+                              alt={slide.title || "Slide Image"}
+                              className="object-cover w-full h-full"
+                            />
+                          )}
                         </div>
                       </TableCell>
 
