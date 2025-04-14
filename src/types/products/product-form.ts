@@ -9,6 +9,7 @@ export type ProductFormFields = {
   sku: string;
   brand: string;
   is_active: boolean;
+  is_best_seller?: boolean;
   tags?: string;
   imageUrls?: ImageData[];
 };

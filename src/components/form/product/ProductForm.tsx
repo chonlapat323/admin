@@ -199,6 +199,11 @@ const ProductForm = ({
       </div>
 
       <div className="flex items-center gap-2">
+        <input type="checkbox" {...register("is_best_seller")} className="w-4 h-4" />
+        <label>Best Seller</label>
+      </div>
+
+      <div className="flex items-center gap-2">
         <input type="checkbox" {...register("is_active")} defaultChecked className="w-4 h-4" />
         <label>Active</label>
       </div>
