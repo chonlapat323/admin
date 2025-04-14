@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { getAllProducts, createProduct as createProductService } from "@/services/product.service";
-import { ProductFormFields } from "@/components/form/product/ProductForm";
+import { ProductFormFields } from "@/types/products/product-form";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { API_URL } from "@/lib/config";
 import useSWR from "swr";
@@ -38,6 +38,7 @@ export interface Product {
   sku: string;
   brand: string;
   is_active: boolean;
+  is_best_seller: boolean;
   images: ProductImage[];
   tags: Tag[];
   variants: Variant[];

@@ -43,6 +43,7 @@ export function useEditProduct() {
         sku: product.sku,
         brand: product.brand,
         is_active: product.is_active,
+        is_best_seller: product.is_best_seller ?? false,
         tags: product.tags?.map((tag) => tag.name).join(",") || "",
         category_id: categories.find((c) => c.id === product.category?.id)
           ? product.category.id

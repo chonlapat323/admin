@@ -2,11 +2,13 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import ProductForm, { ProductFormFields } from "@/components/form/product/ProductForm";
+import ProductForm from "@/components/form/product/ProductForm";
+import { ProductFormFields } from "@/types/products/product-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCreateProduct } from "@/hooks/useProducts";
 import { ImageData } from "@/components/ui/upload/MultiImageUpload";
+import { useAllCategories } from "@/hooks/useAllCategories";
 
 export default function AddProductPage() {
   const form = useForm<ProductFormFields>({
@@ -14,6 +16,7 @@ export default function AddProductPage() {
   });
   const router = useRouter();
   const createProduct = useCreateProduct();
+  const { categories, loading } = useAllCategories();
 
   // ✅ ใช้ ImageData[] แทน string[]
   const [imageUrls, setImageUrls] = useState<ImageData[]>([]);
@@ -39,6 +42,8 @@ export default function AddProductPage() {
         setImageUrls={setImageUrls}
         onSubmit={handleCreateProduct}
         isSave={true}
+        categories={categories}
+        deletedCategoryId={null}
       />
     </div>
   );
