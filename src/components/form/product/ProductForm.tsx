@@ -133,6 +133,26 @@ const ProductForm = ({
       </div>
 
       <div>
+        <label>Additional Information</label>
+        <textarea
+          {...register("additionalInformation")}
+          rows={4}
+          placeholder="ข้อมูลเพิ่มเติมของสินค้า เช่น วัสดุ, ขนาด"
+          className="w-full border px-3 py-2 rounded-md"
+        />
+      </div>
+
+      <div>
+        <label>Design</label>
+        <textarea
+          {...register("design")}
+          rows={4}
+          placeholder="รายละเอียดการออกแบบ"
+          className="w-full border px-3 py-2 rounded-md"
+        />
+      </div>
+
+      <div>
         <label>Price</label>
         <input
           type="number"

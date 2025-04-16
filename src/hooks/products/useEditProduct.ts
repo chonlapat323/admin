@@ -37,6 +37,8 @@ export function useEditProduct() {
       form.reset({
         name: product.name,
         description: product.description,
+        additionalInformation: product.additionalInformation,
+        design: product.design,
         price: product.price,
         discountPrice: product.discountPrice,
         stock: product.stock,

@@ -32,6 +32,8 @@ export interface Product {
   category: Category;
   name: string;
   description: string;
+  additionalInformation: string;
+  design: string;
   price: number;
   discountPrice?: number;
   stock: number;

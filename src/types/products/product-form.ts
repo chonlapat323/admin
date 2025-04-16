@@ -3,6 +3,8 @@ export type ProductFormFields = {
   category_id: number;
   name: string;
   description: string;
+  additionalInformation?: string;
+  design?: string;
   price: number;
   discountPrice?: number;
   stock: number;
