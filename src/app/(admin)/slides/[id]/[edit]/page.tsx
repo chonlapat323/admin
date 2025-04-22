@@ -26,9 +26,8 @@ export default function EditSlidePage() {
         is_active: slide.is_active,
         is_default: slide.is_default,
       });
-
       const imageData: ImageData[] =
-        slide.images?.map((img) => ({ id: img.id, url: img.url })) || [];
+        slide.slide_images?.map((img) => ({ id: img.id, url: img.url })) || [];
 
       setImageUrls(imageData);
     }

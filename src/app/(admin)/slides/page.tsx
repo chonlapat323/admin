@@ -85,7 +85,7 @@ export default function SlideListPage() {
                 </TableRow>
               ) : (
                 slides.map((slide) => {
-                  const mainImage = slide.images?.find((img) => img.order_image === 0);
+                  const mainImage = slide.slide_images?.find((img) => img.order_image === 0);
                   const fullImageUrl =
                     mainImage?.url && mainImage.url.startsWith("http")
                       ? mainImage.url
