@@ -84,7 +84,7 @@ export default function MultiImageUpload({
 
     const image = images[selectedIndex];
 
-    if (image.url.startsWith("/public/uploads/products") && image.id) {
+    if (image.url.startsWith("/uploads/products") && image.id) {
       try {
         await deleteProductImage(image.id);
       } catch {

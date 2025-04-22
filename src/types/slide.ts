@@ -13,7 +13,7 @@ export interface Slide {
   is_default: boolean;
   created_at: string;
   updated_at: string;
-  images: SlideImage[];
+  slide_images: SlideImage[];
 }
 
 export interface SlideImageInput {
