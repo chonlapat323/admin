@@ -65,8 +65,7 @@ export default function SlideForm({
           maxFiles={4}
           type="slide"
           onImagesChange={(images) => {
-            const newData = images.map((img) => ({ url: typeof img === "string" ? img : img.url }));
-            setImageUrls(newData);
+            setImageUrls(images);
           }}
           initialUrls={!isSave ? imageUrls : undefined}
         />

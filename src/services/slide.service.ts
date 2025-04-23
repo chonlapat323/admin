@@ -63,3 +63,15 @@ export async function deleteSlide(id: number) {
   if (!res.ok) throw new Error("Failed to delete slide");
   return res.json();
 }
+
+export async function deleteSlidetImage(imageId: number) {
+  const res = await fetchWithAuth(`${API_URL}/slides/images/${imageId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("ลบรูปภาพไม่สำเร็จ");
+  }
+
+  return res.json();
+}

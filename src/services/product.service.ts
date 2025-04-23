@@ -1,6 +1,6 @@
 // Update to: src/services/product.service.ts
 
-import { ProductFormFields } from "@/components/form/product/ProductForm";
+import { ProductFormFields } from "@/types/products/product-form";
 import { Product } from "@/hooks/useProducts";
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
