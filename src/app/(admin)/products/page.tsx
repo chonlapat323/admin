@@ -87,7 +87,7 @@ export default function ProductListPage() {
                 </TableRow>
               ) : (
                 products.map((product) => {
-                  const mainImage = product.images.find((img) => img.is_main);
+                  const mainImage = product.product_image.find((img) => img.is_main);
                   return (
                     <TableRow
                       key={product.id}
@@ -104,7 +104,7 @@ export default function ProductListPage() {
                               src={
                                 mainImage
                                   ? `${process.env.NEXT_PUBLIC_API_URL}${mainImage.url}`
-                                  : "/no-image.jpg"
+                                  : "/uploads/no-image.jpg"
                               }
                               alt={product.name}
                               className="object-cover w-full h-full"

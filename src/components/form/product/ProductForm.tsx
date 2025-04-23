@@ -101,8 +101,7 @@ const ProductForm = ({
         <MultiImageUpload
           maxFiles={4}
           onImagesChange={(images) => {
-            const newData = images.map((img) => ({ url: typeof img === "string" ? img : img.url }));
-            setImageUrls(newData);
+            setImageUrls(images);
           }}
           initialUrls={!isSave ? imageUrls : undefined}
         />

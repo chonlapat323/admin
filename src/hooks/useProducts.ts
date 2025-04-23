@@ -41,7 +41,7 @@ export interface Product {
   brand: string;
   is_active: boolean;
   is_best_seller: boolean;
-  images: ProductImage[];
+  product_image: ProductImage[];
   tags: Tag[];
   variants: Variant[];
 }

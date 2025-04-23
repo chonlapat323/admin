@@ -15,6 +15,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { deleteSlidetImage } from "@/services/slide.service";
 
 export type ImageData = {
   id?: number;
@@ -56,18 +57,20 @@ export default function MultiImageUpload({
     }
 
     const selected = Array.from(files).slice(0, maxFiles - images.length);
-    const previewUrls = selected.map((file) => ({
-      url: URL.createObjectURL(file),
-    }));
-    setImages((prev) => [...prev, ...previewUrls]);
 
     try {
       const urls = await upload(selected, type);
       const newImages: ImageData[] = urls.map((url) => ({ url }));
-      const updated = [...images, ...newImages];
+
+      // ✅ เก็บรูปเดิมทั้งหมดไว้ ยกเว้นรูปที่มี url ซ้ำกับรูปใหม่
+      const existingImages = images.filter(
+        (img) => !newImages.some((newImg) => newImg.url === img.url)
+      );
+
+      const updated = [...existingImages, ...newImages];
       setImages(updated);
       onImagesChange(updated);
-    } catch (err) {
+    } catch {
       toast.error("อัปโหลดรูปไม่สำเร็จ");
     } finally {
       if (inputRef.current) inputRef.current.value = "";
@@ -83,10 +86,14 @@ export default function MultiImageUpload({
     if (selectedIndex === null) return;
 
     const image = images[selectedIndex];
+    let check_url = image.url.startsWith("/uploads/products");
+    if (type === "slide") {
+      check_url = image.url.startsWith("/uploads/slides");
+    }
 
-    if (image.url.startsWith("/uploads/products") && image.id) {
+    if (check_url && image.id) {
       try {
-        await deleteProductImage(image.id);
+        type === "slide" ? await deleteSlidetImage(image.id) : await deleteProductImage(image.id);
       } catch {
         toast.error("ลบรูปภาพไม่สำเร็จ");
       }

@@ -53,8 +53,7 @@ export function useEditProduct() {
       });
 
       const imageData: ImageData[] =
-        product.images?.map((img) => ({ id: img.id, url: img.url })) || [];
-
+        product.product_image?.map((img) => ({ id: img.id, url: img.url })) || [];
       setImageUrls(imageData);
     }
   }, [product, form]);
