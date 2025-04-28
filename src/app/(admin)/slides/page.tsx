@@ -1,4 +1,3 @@
-// File: src/app/(admin)/slides/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -9,44 +8,21 @@ import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { PencilIcon, TrashBinIcon, ImageIcon } from "@/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useSlides } from "@/hooks/useSlides";
-import { deleteSlide } from "@/services/slide.service";
+import { useSlides } from "@/hooks/slides/useSlides";
 
 export default function SlideListPage() {
   const [page, setPage] = useState(1);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
-
-  const { slides, loading, totalPages, setSlides } = useSlides(page);
-
-  const handleEditClick = (id: number) => {
-    router.push(`/slides/${id}/edit`);
-  };
-
-  const handleDeleteClick = (id: number) => {
-    setSelectedId(id);
-    setShowModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!selectedId) return;
-    setDeletingId(selectedId);
-    setShowModal(false);
-    try {
-      await deleteSlide(selectedId);
-      toast.success("ลบสไลด์สำเร็จแล้ว");
-      setSlides((prev) => prev.filter((s) => s.id !== selectedId));
-    } catch (err) {
-      toast.error("ลบไม่สำเร็จ");
-    } finally {
-      setDeletingId(null);
-      setSelectedId(null);
-    }
-  };
+  const {
+    slides,
+    loading,
+    totalPages,
+    deletingId,
+    showModal,
+    handleEditClick,
+    handleDeleteClick,
+    handleConfirmDelete,
+    setShowModal,
+  } = useSlides(page);
 
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">

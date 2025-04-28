@@ -1,24 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { UseFormReturn } from "react-hook-form";
 import AvatarUpload from "@/components/ui/upload/AvatarUpload";
-
-export type CategoryFormFields = {
-  name: string;
-  description?: string;
-  link?: string;
-  is_active: boolean;
-};
-
-type CategoryFormProps = {
-  form: UseFormReturn<CategoryFormFields>;
-  onSubmit: (form: FormData) => void;
-  onImageChange?: (file: File | null) => void;
-  imagePreview?: string;
-  imageLoading?: boolean;
-  isSave: boolean;
-};
+import { CategoryFormFields, CategoryFormProps } from "@/types/categories/CategoryForm";
 
 const CategoryForm = ({
   form,
@@ -27,18 +10,26 @@ const CategoryForm = ({
   imagePreview,
   imageLoading,
   isSave,
+  imageFile,
 }: CategoryFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors, touchedFields },
+    watch,
   } = form;
 
-  const onFormSubmit = (data: CategoryFormFields) => {
+  const onFormSubmit = (values: CategoryFormFields) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value?.toString() ?? "");
-    });
+    formData.append("name", values.name);
+    formData.append("description", values.description ?? "");
+    formData.append("is_active", values.is_active ? "true" : "false");
+    if (values.link) {
+      formData.append("link", values.link);
+    }
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
     onSubmit(formData);
   };
 
@@ -48,18 +39,16 @@ const CategoryForm = ({
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
-      {/* Image */}
       <div>
         <label className="block text-sm font-medium mb-1">Image</label>
         <AvatarUpload value={imagePreview} onChange={onImageChange} loading={imageLoading} />
       </div>
 
-      {/* Name */}
       <div>
-        <label>Name</label>
+        <label className="block text-sm font-medium mb-1">Name</label>
         <input
           {...register("name", { required: "Name is required" })}
-          className={`w-full px-3 py-2 border rounded-md ${
+          className={`w-full px-3 py-2 border rounded-md focus:ring focus:outline-none ${
             errors.name ? "border-red-500 bg-red-50" : "border-gray-300"
           }`}
         />
@@ -68,40 +57,44 @@ const CategoryForm = ({
         )}
       </div>
 
-      {/* Description */}
       <div>
-        <label>Description</label>
+        <label className="block text-sm font-medium mb-1">Description</label>
         <textarea
           {...register("description")}
           rows={3}
-          className="w-full border px-3 py-2 rounded-md"
+          className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring focus:outline-none"
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="link" className="block font-medium text-sm text-gray-700">
-          ลิงก์ (เช่น bedroom)
-        </label>
+      <div>
+        <label className="block text-sm font-medium mb-1">Link (e.g. living-room)</label>
         <input
           type="text"
-          id="link"
           {...register("link")}
-          className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+          className={`w-full border border-gray-300 px-3 py-2 rounded-md focus:ring focus:outline-none ${
+            errors.link ? "border-red-500 bg-red-50" : "border-gray-300"
+          }`}
           placeholder="living-room"
         />
+        {errors.link && touchedFields.link && (
+          <p className="text-red-600 text-sm">{errors.link.message}</p>
+        )}
       </div>
 
-      {/* Active */}
       <div className="flex items-center gap-2">
-        <input type="checkbox" {...register("is_active")} defaultChecked className="w-4 h-4" />
-        <label>Active</label>
+        <input
+          type="checkbox"
+          {...register("is_active")}
+          checked={watch("is_active")}
+          className="w-4 h-4"
+        />
+        <label className="text-sm">Active</label>
       </div>
 
-      {/* Submit */}
       <div>
         <button
           type="submit"
-          className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition w-full"
         >
           {isSave ? "Add Category" : "Update Category"}
         </button>

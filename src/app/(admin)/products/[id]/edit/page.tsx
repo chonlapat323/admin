@@ -4,16 +4,8 @@ import ProductForm from "@/components/form/product/ProductForm";
 import { useEditProduct } from "@/hooks/products/useEditProduct";
 
 export default function EditProductPage() {
-  const {
-    form,
-    imageUrls,
-    setImageUrls,
-    handleUpdateProduct,
-    isLoading,
-    categories,
-    deletedCategory,
-    loading,
-  } = useEditProduct();
+  const { form, imageUrls, setImageUrls, handleSubmit, categories, deletedCategory, loading } =
+    useEditProduct();
 
   return (
     <div className="p-6 bg-white rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -22,11 +14,11 @@ export default function EditProductPage() {
         form={form}
         imageUrls={imageUrls}
         setImageUrls={setImageUrls}
-        onSubmit={handleUpdateProduct}
+        onSubmit={handleSubmit}
         isSave={false}
         categories={categories}
         deletedCategoryId={deletedCategory}
-        loading={loading || isLoading}
+        loading={loading}
       />
     </div>
   );

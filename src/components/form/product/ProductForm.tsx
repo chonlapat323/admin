@@ -15,7 +15,7 @@ type ProductFormProps = {
   isSave: boolean;
   categories: Category[];
   deletedCategoryId: number | null;
-  loading?: boolean; // ✅ เพิ่ม prop นี้
+  loading?: boolean;
 };
 
 const ProductForm = ({
@@ -54,11 +54,12 @@ const ProductForm = ({
     const payload: ProductFormFields = {
       ...data,
       tags: data.tags,
-      imageUrls: imageUrls.map((img) => (typeof img === "string" ? { url: img } : img)),
+      image_urls: imageUrls.map((img) => (typeof img === "string" ? { url: img } : img)),
     };
     onSubmit(payload);
   };
-  const isCategoryDeleted = !!deletedCategoryId;
+  const selectedCategory = categories.find((cat) => cat.id === currentCategoryId);
+  const isCategoryDeleted = !selectedCategory;
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
@@ -72,13 +73,13 @@ const ProductForm = ({
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >
-      {loading}
+      {isCategoryDeleted}
       <div>
         <label className="block text-sm font-medium mb-1">Category</label>
         <Select
           options={categoryOptions}
           placeholder="Select a category"
-          value={currentCategoryId?.toString() ?? ""}
+          value={isCategoryDeleted ? "" : String(currentCategoryId ?? "")}
           onChange={(val) => setValue("category_id", parseInt(val), { shouldValidate: true })}
           className={`dark:bg-dark-900 ${isCategoryDeleted ? "border-red-500 ring-red-500" : ""}`}
         />
@@ -134,7 +135,7 @@ const ProductForm = ({
       <div>
         <label>Additional Information</label>
         <textarea
-          {...register("additionalInformation")}
+          {...register("additional_information")}
           rows={4}
           placeholder="ข้อมูลเพิ่มเติมของสินค้า เช่น วัสดุ, ขนาด"
           className="w-full border px-3 py-2 rounded-md"
@@ -169,7 +170,7 @@ const ProductForm = ({
         <input
           type="number"
           step="0.01"
-          {...register("discountPrice")}
+          {...register("discount_price")}
           className="w-full border px-3 py-2 rounded-md"
         />
       </div>

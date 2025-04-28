@@ -1,7 +1,7 @@
 // src/hooks/useAddAdminForm.ts
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import type { FormFields } from "@/components/form/user/UserForm";
+import { FormFields } from "@/types/user-form";
 
 export function useAddMemberForm() {
   const form = useForm<FormFields>();

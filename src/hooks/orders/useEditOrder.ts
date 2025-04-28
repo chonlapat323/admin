@@ -8,7 +8,6 @@ import { useEffect } from "react";
 
 export const useEditOrder = ({ reset }: { reset: UseFormReset<EditOrderFormFields> }) => {
   const params = useParams();
-  const router = useRouter();
   const orderId = Number(params.id);
 
   const { order, isLoading, isError, refresh } = useGetOrder(orderId);
@@ -24,14 +23,8 @@ export const useEditOrder = ({ reset }: { reset: UseFormReset<EditOrderFormField
   }, [order, reset]);
 
   const handleSubmit = async (data: EditOrderFormFields) => {
-    const res = await update(orderId, data);
-
-    if (!res.ok) {
-      toast.error("ไม่สามารถอัปเดตคำสั่งซื้อได้");
-      return;
-    }
-
-    toast.success("อัปเดตคำสั่งซื้อสำเร็จ");
+    await update(orderId, data);
+    toast.success("Order updated successfully.");
     await refresh();
   };
 

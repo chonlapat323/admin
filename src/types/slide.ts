@@ -28,3 +28,7 @@ export type SlideFormFields = {
   is_active: boolean;
   imageUrls?: SlideImageInput[];
 };
+
+export interface DeleteSlideResponse {
+  message: string;
+}

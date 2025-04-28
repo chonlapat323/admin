@@ -1,37 +1,21 @@
-// src/services/member.service.ts
-
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { CreateAdminResponse } from "@/types/api/admin/CreateAdminResponse";
+import { PaginatedAdminResponse } from "@/types/api/admin/ListAdminResponse";
+import { Member } from "@/types/member";
 
-export async function getMembers(page: number) {
-  const res = await fetchWithAuth(`${API_URL}/users?role=member&page=${page}`, {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch members");
-  }
-
-  return res.json();
+export function getMembers(page: number): Promise<PaginatedAdminResponse<Member>> {
+  return fetchWithAuth<PaginatedAdminResponse<Member>>(`${API_URL}/users?role=member&page=${page}`);
 }
 
-export async function getMemberById(id: string) {
-  const res = await fetchWithAuth(`${API_URL}/users/${id}`, {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch member");
-  }
-
-  return res.json();
+export function getMemberById(id: string): Promise<Member> {
+  return fetchWithAuth<Member>(`${API_URL}/users/${id}`);
 }
 
-export const createMember = async (formData: FormData) => {
-  return await fetchWithAuth(`${API_URL}/users`, {
+export const createMember = async (formData: FormData): Promise<CreateAdminResponse> => {
+  return await fetchWithAuth<CreateAdminResponse>(`${API_URL}/users`, {
     method: "POST",
     body: formData,
-    credentials: "include",
   });
 };
 

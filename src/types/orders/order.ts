@@ -37,5 +37,5 @@ export type AdminOrder = {
   created_at: string;
   tracking_number?: string | null;
   user_name: string | null;
-  items: OrderItem[]; // ✅ เพิ่มตรงนี้
+  items: OrderItem[];
 };
