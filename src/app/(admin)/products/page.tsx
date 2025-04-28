@@ -1,4 +1,3 @@
-// File: src/app/(admin)/products/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -10,44 +9,22 @@ import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { BoxIconLine, PencilIcon, TrashBinIcon } from "@/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useProducts } from "@/hooks/useProducts"; // <- คุณต้องสร้าง hook นี้เอง
-import { deleteProduct } from "@/services/product.service"; // <- และ service นี้ด้วย
+import { useProducts } from "@/hooks/products/useProducts";
 
 export default function ProductListPage() {
   const [page, setPage] = useState(1);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
 
-  const { products, loading, totalPages, setProducts } = useProducts(page);
-
-  const handleEditClick = (id: number) => {
-    router.push(`/products/${id}/edit`);
-  };
-
-  const handleDeleteClick = (id: number) => {
-    setSelectedId(id);
-    setShowModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!selectedId) return;
-    setDeletingId(selectedId);
-    setShowModal(false);
-    try {
-      await deleteProduct(selectedId);
-      toast.success("ลบสินค้าเรียบร้อยแล้ว");
-      setProducts((prev) => prev.filter((p) => p.id !== selectedId));
-    } catch (err) {
-      toast.error("ลบสินค้าไม่สำเร็จ");
-    } finally {
-      setDeletingId(null);
-      setSelectedId(null);
-    }
-  };
+  const {
+    products,
+    loading,
+    totalPages,
+    deletingId,
+    showModal,
+    handleEditClick,
+    handleDeleteClick,
+    handleConfirmDelete,
+    setShowModal,
+  } = useProducts(page);
 
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
@@ -58,7 +35,6 @@ export default function ProductListPage() {
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow transition duration-200"
         >
           <BoxIconLine />
-
           <span className="font-medium">Add Product</span>
         </Link>
       </div>
@@ -79,11 +55,11 @@ export default function ProductListPage() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell className="text-center py-6">กำลังโหลด...</TableCell>
+                  <TableCell className="text-center py-6">Loading...</TableCell>
                 </TableRow>
               ) : products.length === 0 ? (
                 <TableRow>
-                  <TableCell className="text-center py-6">ไม่พบสินค้า</TableCell>
+                  <TableCell className="text-center py-6">No products found.</TableCell>
                 </TableRow>
               ) : (
                 products.map((product) => {

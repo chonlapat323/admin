@@ -1,59 +1,54 @@
-// Update to: src/services/product.service.ts
-
 import { ProductFormFields } from "@/types/products/product-form";
-import { Product } from "@/hooks/useProducts";
 import { API_URL } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { PaginatedResponse } from "@/types/PaginatedResonse";
+import { Product } from "@/types/products/product";
+import { DeleteResponse } from "@/types/DeleteResponse";
 
-export async function getAllProducts(page: number = 1): Promise<{
-  data: Product[];
-  pageCount: number;
-}> {
-  const res = await fetchWithAuth(`${API_URL}/products?page=${page}`, {
-    next: { tags: ["products"] },
+export function getProducts(page: number = 1): Promise<PaginatedResponse<Product>> {
+  return fetchWithAuth<PaginatedResponse<Product>>(`${API_URL}/products/paginated?page=${page}`, {
+    method: "GET",
+    cache: "no-store",
   });
-
-  if (!res.ok) throw new Error("Failed to fetch products");
-
-  return res.json();
 }
 
-export async function deleteProduct(id: number) {
-  const res = await fetchWithAuth(`${API_URL}/products/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) throw new Error("Failed to delete product");
-  return res.json();
+export function getProduct(id: number): Promise<Product> {
+  return fetchWithAuth<Product>(`${API_URL}/products/${id}`);
 }
 
-export async function createProduct(data: ProductFormFields) {
+export function createProduct(data: ProductFormFields): Promise<Product> {
   const payload = {
     ...data,
-    imageUrls: data.imageUrls?.map((img) => (typeof img === "string" ? { url: img } : img)),
+    imageUrls: data.image_urls?.map((img) => ({ url: img.url })),
   };
 
-  const res = await fetchWithAuth(`${API_URL}/products`, {
+  return fetchWithAuth<Product>(`${API_URL}/products`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
-
-  if (!res.ok) throw new Error("Create product failed");
-
-  return res.json();
 }
 
-export async function deleteProductImage(imageId: number) {
-  const res = await fetchWithAuth(`${API_URL}/products/images/${imageId}`, {
+export function updateProduct(id: number, payload: ProductFormFields): Promise<Product> {
+  return fetchWithAuth<Product>(`${API_URL}/products/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteProduct(id: number): Promise<DeleteResponse> {
+  return fetchWithAuth<DeleteResponse>(`${API_URL}/products/${id}`, {
     method: "DELETE",
   });
+}
 
-  if (!res.ok) {
-    throw new Error("ลบรูปภาพไม่สำเร็จ");
-  }
-
-  return res.json();
+export function deleteProductImage(imageId: number): Promise<DeleteResponse> {
+  return fetchWithAuth<DeleteResponse>(`${API_URL}/products/images/${imageId}`, {
+    method: "DELETE",
+  });
 }

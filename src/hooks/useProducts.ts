@@ -8,43 +8,7 @@ import { ProductFormFields } from "@/types/products/product-form";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { API_URL } from "@/lib/config";
 import useSWR from "swr";
-import { Category } from "@/types/category";
-
-export interface Tag {
-  id: number;
-  name: string;
-}
-
-export interface Variant {
-  id: number;
-  name: string;
-  stock: number;
-}
-
-export interface ProductImage {
-  id: number;
-  url: string;
-  is_main: boolean;
-}
-
-export interface Product {
-  id: number;
-  category: Category;
-  name: string;
-  description: string;
-  additionalInformation: string;
-  design: string;
-  price: number;
-  discountPrice?: number;
-  stock: number;
-  sku: string;
-  brand: string;
-  is_active: boolean;
-  is_best_seller: boolean;
-  product_image: ProductImage[];
-  tags: Tag[];
-  variants: Variant[];
-}
+import { Product } from "@/types/products/product";
 
 export function useProducts(page: number = 1) {
   const [products, setProducts] = useState<Product[]>([]);

@@ -4,6 +4,10 @@ import { Category } from "@/types/category";
 import { DeleteResponse } from "@/types/DeleteResponse";
 import { PaginatedResponse } from "@/types/PaginatedResonse";
 
+export function getAllCategories(): Promise<Category[]> {
+  return fetchWithAuth<Category[]>(`${API_URL}/categories/active`);
+}
+
 export function getCategories(page: number = 1): Promise<PaginatedResponse<Category>> {
   return fetchWithAuth<PaginatedResponse<Category>>(
     `${API_URL}/categories/paginated?page=${page}`,
