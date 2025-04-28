@@ -19,7 +19,6 @@ export default function EditOrderForm({ form, onSubmit, isSubmitting }: Props) {
     control,
   } = form;
 
-  // ✅ ตรวจสถานะ order_status
   const currentStatus = useWatch({
     control,
     name: "order_status",
@@ -27,7 +26,6 @@ export default function EditOrderForm({ form, onSubmit, isSubmitting }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-xl w-full space-y-5 text-left">
-      {/* สถานะคำสั่งซื้อ */}
       <div>
         <label className="block text-sm font-medium mb-1">สถานะคำสั่งซื้อ</label>
         <select
@@ -47,10 +45,9 @@ export default function EditOrderForm({ form, onSubmit, isSubmitting }: Props) {
         )}
       </div>
 
-      {/* หมายเลขพัสดุ */}
       <div>
         <label className="block text-sm font-medium mb-1">หมายเลขพัสดุ (Tracking)</label>
-        {currentStatus}
+
         <input
           type="text"
           {...register("tracking_number", {

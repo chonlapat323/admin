@@ -16,7 +16,6 @@ export default function AdminOrderEditPage() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto mt-8">
-      {/* ✅ Left: Order Info */}
       <div className="p-6 bg-white rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.03]">
         <h2 className="text-xl font-semibold mb-4">ข้อมูลคำสั่งซื้อ</h2>
         <p>
@@ -41,7 +40,6 @@ export default function AdminOrderEditPage() {
           <span className="font-medium">Tracking:</span> {order.tracking_number || "-"}
         </p>
 
-        {/* ✅ Items */}
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-2">รายการสินค้า</h3>
           <div className="space-y-3">
@@ -64,7 +62,6 @@ export default function AdminOrderEditPage() {
         </div>
       </div>
 
-      {/* ✅ Right: Edit Form */}
       <div className="p-6 bg-white rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.03]">
         <h2 className="text-xl font-semibold mb-4">แก้ไขคำสั่งซื้อ</h2>
         <EditOrderForm form={form} onSubmit={handleSubmit} />

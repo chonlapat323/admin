@@ -11,14 +11,18 @@ import { getOrderStatusColor, getOrderStatusLabel } from "@/utils/orders/order-s
 import { formatDate } from "@/utils/format-date";
 import Link from "next/link";
 import { OrderStatus } from "@/types/orders/order";
+import { toast } from "sonner";
 
 export default function AdminOrderListPage() {
   const [page, setPage] = useState(1);
+  const limit = 5;
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const { orders, isLoading, isError, handleCancelOrder } = useOrderActions();
-
+  const { orders, totalPages, isLoading, isError, handleCancelOrder } = useOrderActions(
+    page,
+    limit
+  );
   const handleOpenCancelModal = (orderId: number) => {
     setSelectedOrderId(orderId);
     setShowCancelModal(true);
@@ -26,8 +30,13 @@ export default function AdminOrderListPage() {
 
   const handleConfirmCancel = async () => {
     if (selectedOrderId) {
-      await handleCancelOrder(selectedOrderId);
-      setShowCancelModal(false);
+      try {
+        await handleCancelOrder(selectedOrderId);
+        toast.success("Order cancelled successfully.");
+        setShowCancelModal(false);
+      } catch (error) {
+        toast.error("Failed to cancel the order.");
+      }
     }
   };
 
@@ -119,8 +128,11 @@ export default function AdminOrderListPage() {
         </div>
       </div>
 
-      {/* TODO: Add real pagination */}
-      {/* <Pagination currentPage={page} totalPages={...} onPageChange={setPage} /> */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex justify-center">
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        </div>
+      )}
 
       <ConfirmModal
         open={showCancelModal}
