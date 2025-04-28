@@ -57,7 +57,6 @@ export default function MultiImageUpload({
     }
 
     const selected = Array.from(files).slice(0, maxFiles - images.length);
-
     try {
       const urls = await upload(selected, type);
       const newImages: ImageData[] = urls.map((url) => ({ url }));

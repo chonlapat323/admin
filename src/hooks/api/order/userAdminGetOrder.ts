@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { getAdminOrders } from "@/services/order.service";
 
 export const useAdminGetOrders = () => {
-  const { data, error, isLoading, mutate } = useSWR("/orders", getAdminOrders);
+  const { data, error, isLoading, mutate } = useSWR("/orders/admin", getAdminOrders);
 
   return {
     orders: data ?? [],

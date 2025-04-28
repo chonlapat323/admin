@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useGetProduct, useUpdateProduct } from "@/hooks/useProducts";
-import { useAllCategories } from "@/hooks/useAllCategories";
+import { useAllCategories } from "@/hooks/categories2/useAllCategories";
 import { ImageData } from "@/components/ui/upload/MultiImageUpload";
 import { ProductFormFields } from "@/types/products/product-form";
 

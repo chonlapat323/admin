@@ -1,4 +1,3 @@
-// File: src/app/(admin)/members/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -10,45 +9,26 @@ import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { PencilIcon, TrashBinIcon, UserIcon } from "@/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { UserRoleMap } from "@/constants/roles";
-import { useMembers } from "@/hooks/useMembers";
-import { deleteMember } from "@/services/member.service";
+import { useMembers } from "@/hooks/member/useMembers";
 
 export default function MemberListPage() {
   const [page, setPage] = useState(1);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
+  const {
+    members,
+    loading,
+    totalPages,
+    deletingId,
+    showModal,
+    handleEditClick,
+    handleDeleteClick,
+    handleConfirmDelete,
+    setShowModal,
+  } = useMembers(page);
 
-  const { members, loading, totalPages, setMembers } = useMembers(page);
-
-  const handleEditClick = (id: number) => {
-    router.push(`/members/${id}/edit`);
-  };
-
-  const handleDeleteClick = (id: number) => {
-    setSelectedId(id);
-    setShowModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!selectedId) return;
-    setDeletingId(selectedId);
-    setShowModal(false);
-    try {
-      await deleteMember(selectedId);
-      toast.success("ลบสมาชิกสำเร็จแล้ว");
-      setMembers((prev) => prev.filter((m) => m.id !== selectedId));
-    } catch (err) {
-      toast.error("ลบไม่สำเร็จ");
-    } finally {
-      setDeletingId(null);
-      setSelectedId(null);
-    }
-  };
+  if (!Array.isArray(members)) {
+    return <div className="p-6 text-red-500">เกิดข้อผิดพลาด: ไม่สามารถโหลดข้อมูลได้</div>;
+  }
 
   return (
     <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">

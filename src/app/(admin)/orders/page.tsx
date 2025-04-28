@@ -10,6 +10,7 @@ import { useOrderActions } from "@/hooks/orders/useOrderActions";
 import { getOrderStatusColor, getOrderStatusLabel } from "@/utils/orders/order-status";
 import { formatDate } from "@/utils/format-date";
 import Link from "next/link";
+import { OrderStatus } from "@/types/orders/order";
 
 export default function AdminOrderListPage() {
   const [page, setPage] = useState(1);
@@ -77,15 +78,16 @@ export default function AdminOrderListPage() {
                       {formatDate(order.created_at)}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-left">
-                      {order.tracking_number ? (
-                        <div className="flex items-center gap-2">
-                          <span>{order.tracking_number}</span>
-                          <Button
-                            onClick={() => navigator.clipboard.writeText(order.tracking_number!)}
-                            className="text-blue-500 text-xs hover:underline"
-                          >
+                      {order.tracking_number && order.order_status !== OrderStatus.cancelled ? (
+                        <div className="relative flex items-center justify-left group">
+                          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
                             Copy
-                          </Button>
+                          </button>
+
+                          {/* Pop Hover */}
+                          <div className="absolute bottom-full mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition">
+                            Tracking: 123
+                          </div>
                         </div>
                       ) : (
                         <span className="text-gray-400">—</span>

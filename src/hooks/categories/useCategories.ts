@@ -1,44 +1,42 @@
-// hooks/useCategories.ts
+"use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { getCategories, deleteCategory } from "@/services/category.service";
 import { Category } from "@/types/category";
+import { toast } from "sonner";
 
-export function useCategories(page: number) {
+export function useCategories(page: number = 1) {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  const router = useRouter();
-
   useEffect(() => {
-    const fetchCategories = async () => {
-      setLoading(true);
-      try {
-        const res = await getCategories(page);
-        setCategories(res.data);
-        setTotalPages(res.pageCount || 1);
-      } catch (err) {
-        console.error("❌ Failed to fetch categories", err);
-        toast.error("โหลดหมวดหมู่ไม่สำเร็จ");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCategories();
   }, [page]);
 
-  // ✅ Edit
+  const fetchCategories = async () => {
+    setLoading(true);
+    try {
+      const res = await getCategories(page);
+      setCategories(res.data);
+      setTotalPages(res.pageCount || 1);
+    } catch (err) {
+      console.error("❌ Failed to fetch categories", err);
+      toast.error("Failed to load categories");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditClick = (id: number) => {
     router.push(`/categories/${id}/edit`);
   };
 
-  // ✅ Delete (confirm)
   const handleDeleteClick = (id: number) => {
     setSelectedId(id);
     setShowModal(true);
@@ -51,10 +49,10 @@ export function useCategories(page: number) {
     try {
       await deleteCategory(selectedId);
       setCategories((prev) => prev.filter((c) => c.id !== selectedId));
-      toast.success("ลบหมวดหมู่สำเร็จแล้ว");
+      toast.success("Category deleted successfully");
     } catch (err) {
-      console.error(err);
-      toast.error("ลบไม่สำเร็จ");
+      console.error("❌ Failed to delete category", err);
+      toast.error("Failed to delete category");
     } finally {
       setDeletingId(null);
       setSelectedId(null);
@@ -63,14 +61,13 @@ export function useCategories(page: number) {
 
   return {
     categories,
-    setCategories,
     loading,
     totalPages,
     deletingId,
     showModal,
-    setShowModal,
     handleEditClick,
     handleDeleteClick,
     handleConfirmDelete,
+    setShowModal,
   };
 }

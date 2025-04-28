@@ -61,7 +61,7 @@ const UserForm = ({
     }
   }, [errors.email, setFocus]);
 
-  const onFormSubmit = (data: FormFields) => {
+  const onFormSubmit = async (data: FormFields) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (key === "password" && !value) return;
@@ -69,7 +69,11 @@ const UserForm = ({
       if (key === "last_login" || key === "created_at" || key === "updated_at") return; // ✅ ข้าม field ที่ไม่ควรส่ง
       formData.append(key, value?.toString() ?? "");
     });
-    onSubmit(formData);
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      throw error; // ❗ โยนต่อให้ form catch ได้
+    }
   };
 
   const roleNameMap = {
@@ -82,7 +86,14 @@ const UserForm = ({
 
   return (
     <form
-      onSubmit={handleSubmit(onFormSubmit)}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        try {
+          await handleSubmit(onFormSubmit)(e);
+        } catch (error) {
+          console.error("❗ Unexpected form submit error", error);
+        }
+      }}
       className="max-w-xl w-full space-y-5 text-left"
       autoComplete="off"
     >

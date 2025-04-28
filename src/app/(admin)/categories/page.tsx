@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { useCategories } from "@/hooks/categories/useCategories";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Button from "@/components/ui/button/Button";
 import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { BoxIconLine, PencilIcon, TrashBinIcon } from "@/icons";
 import Link from "next/link";
-import { useCategories } from "@/hooks/useCategories";
 
 export default function CategoryListPage() {
   const [page, setPage] = useState(1);
@@ -25,7 +25,7 @@ export default function CategoryListPage() {
   } = useCategories(page);
 
   return (
-    <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
+    <div className="p-6 bg-white rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold text-gray-800">Category List</h2>
         <Link
@@ -43,9 +43,9 @@ export default function CategoryListPage() {
             <TableHeader>
               <TableRow>
                 <TableCell>Image</TableCell>
-                <TableCell className="px-4 py-3 font-medium text-left">Name</TableCell>
-                <TableCell className="px-4 py-3 font-medium text-left">Status</TableCell>
-                <TableCell className="px-4 py-3 font-medium text-left">Action</TableCell>
+                <TableCell className="text-left">Name</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHeader>
 
@@ -59,34 +59,40 @@ export default function CategoryListPage() {
                   <TableCell className="text-center py-6">No categories found</TableCell>
                 </TableRow>
               ) : (
-                categories.map((cat) => (
+                categories.map((category) => (
                   <TableRow
-                    key={cat.id}
+                    key={category.id}
                     className={`transition-opacity duration-300 ${
-                      deletingId === cat.id ? "opacity-0" : "opacity-100"
+                      deletingId === category.id ? "opacity-0" : "opacity-100"
                     }`}
                   >
                     <TableCell>
                       <img
-                        src={`${process.env.NEXT_PUBLIC_API_URL}${cat.image}`}
-                        alt={cat.name}
+                        src={
+                          category.image
+                            ? `${process.env.NEXT_PUBLIC_API_URL}${category.image}`
+                            : "/images/placeholder.png"
+                        }
+                        alt={`Image of ${category.name}`}
                         className="w-12 h-12 object-cover rounded-md border"
                       />
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-left">{cat.name}</TableCell>
-                    <TableCell className="px-4 py-3 text-left">
+                    <TableCell className="text-left py-3">{category.name}</TableCell>
+                    <TableCell className="text-left py-3">
                       <span
                         className={`px-2 py-1 rounded text-sm font-medium ${
-                          cat.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                          category.is_active
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {cat.is_active ? "Active" : "Inactive"}
+                        {category.is_active ? "Active" : "Inactive"}
                       </span>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-left">
+                    <TableCell className="text-left py-3">
                       <div className="flex items-center gap-3">
                         <Button
-                          onClick={() => handleEditClick(cat.id)}
+                          onClick={() => handleEditClick(category.id)}
                           size="sm"
                           variant="outline"
                           startIcon={<PencilIcon />}
@@ -94,7 +100,7 @@ export default function CategoryListPage() {
                           Edit
                         </Button>
                         <Button
-                          onClick={() => handleDeleteClick(cat.id)}
+                          onClick={() => handleDeleteClick(category.id)}
                           size="sm"
                           variant="outline"
                           startIcon={<TrashBinIcon />}
@@ -114,11 +120,7 @@ export default function CategoryListPage() {
 
       {totalPages > 1 && (
         <div className="mt-6 flex justify-center">
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={(newPage) => setPage(newPage)}
-          />
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </div>
       )}
 

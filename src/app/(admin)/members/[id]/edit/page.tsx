@@ -2,7 +2,7 @@
 
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import UserForm from "@/components/form/user/UserForm";
-import { useEditMember } from "@/hooks/useEditMember";
+import { useEditMember } from "@/hooks/member/useEditMember";
 
 export default function EditMemberPage() {
   const { form, handleSubmit, handleAvatarChange, avatarPreview, loading } = useEditMember();

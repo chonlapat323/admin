@@ -4,7 +4,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { AdminOrder } from "@/types/orders/order";
 
 export async function getAdminOrders(): Promise<AdminOrder[]> {
-  const res = await fetchWithAuth(`${API_URL}/orders`);
+  const res = await fetchWithAuth(`${API_URL}/orders/admin`);
 
   if (!res.ok) {
     throw new Error("ไม่สามารถโหลดคำสั่งซื้อได้");

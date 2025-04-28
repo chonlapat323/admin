@@ -12,9 +12,9 @@ export function useAdmins(page: number) {
     const fetch = async () => {
       try {
         setLoading(true);
-        const data = await getAdmins(page);
-        setAdmins(data.items || []);
-        setTotalPages(data.totalPages || 1);
+        const result = await getAdmins(page);
+        setAdmins(result.items || []);
+        setTotalPages(result.total_page || 1);
       } catch (err) {
         console.error(err);
         toast.error("โหลดข้อมูลแอดมินล้มเหลว");

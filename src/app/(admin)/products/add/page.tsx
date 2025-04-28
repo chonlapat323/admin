@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCreateProduct } from "@/hooks/useProducts";
 import { ImageData } from "@/components/ui/upload/MultiImageUpload";
-import { useAllCategories } from "@/hooks/useAllCategories";
+import { useAllCategories } from "@/hooks/categories2/useAllCategories";
 
 export default function AddProductPage() {
   const form = useForm<ProductFormFields>({

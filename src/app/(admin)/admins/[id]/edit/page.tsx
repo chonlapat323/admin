@@ -1,19 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useParams, useRouter } from "next/navigation";
 import UserForm from "@/components/form/user/UserForm";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-
-import { useAdmin } from "@/hooks/admins/useAdmin";
-import { FormFields } from "@/types/user-form";
+import { useEditAdmin } from "@/hooks/admins/useEditAdmin";
 
 export default function EditAdminPage() {
-  const params = useParams();
-  const adminId = params.id as string;
-  const form = useForm<FormFields>();
-  const { loading, avatarPreview, handleAvatarChange, handleSubmit } = useAdmin(adminId, form);
+  const { form, loading, avatarPreview, handleAvatarChange, handleSubmit } = useEditAdmin();
 
   if (loading) return <p>Loading...</p>;
 
