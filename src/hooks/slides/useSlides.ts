@@ -20,7 +20,7 @@ export function useSlides(page: number = 1, limit: number, search: string) {
     getSlides(page, limit, search)
       .then((res) => {
         setSlides(res.data);
-        setTotalPages(res.totalPages);
+        setTotalPages(res.pageCount);
       })
       .finally(() => setLoading(false));
   }, [page, search]);

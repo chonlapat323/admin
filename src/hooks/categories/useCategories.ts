@@ -6,7 +6,7 @@ import { getCategories, deleteCategory } from "@/services/category.service";
 import { Category } from "@/types/category";
 import { toast } from "sonner";
 
-export function useCategories(page: number = 1) {
+export function useCategories(page: number = 1, limit: number, search: string) {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,22 +16,22 @@ export function useCategories(page: number = 1) {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetchCategories();
-  }, [page]);
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const res = await getCategories(page, limit, search);
+        setCategories(res.data);
+        setTotalPages(res.pageCount || 1);
+      } catch (err) {
+        console.error("❌ Failed to fetch categories", err);
+        toast.error("Failed to load categories");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchCategories = async () => {
-    setLoading(true);
-    try {
-      const res = await getCategories(page);
-      setCategories(res.data);
-      setTotalPages(res.pageCount || 1);
-    } catch (err) {
-      console.error("❌ Failed to fetch categories", err);
-      toast.error("Failed to load categories");
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetch();
+  }, [page, search]);
 
   const handleEditClick = (id: number) => {
     router.push(`/categories/${id}/edit`);

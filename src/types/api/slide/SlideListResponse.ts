@@ -2,7 +2,7 @@ import { Slide } from "@/types/slide";
 
 export interface SlideListResponse {
   data: Slide[];
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
+  current_page: number;
+  pageCount: number;
+  total_items: number;
 }
