@@ -19,7 +19,7 @@ export function getProduct(id: number): Promise<Product> {
 export function createProduct(data: ProductFormFields): Promise<Product> {
   const payload = {
     ...data,
-    imageUrls: data.image_urls?.map((img) => ({ url: img.url })),
+    image_urls: data.image_urls?.map((img) => ({ url: img.url })),
   };
 
   return fetchWithAuth<Product>(`${API_URL}/products`, {

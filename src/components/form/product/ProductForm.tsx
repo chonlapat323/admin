@@ -59,7 +59,12 @@ const ProductForm = ({
     onSubmit(payload);
   };
   const selectedCategory = categories.find((cat) => cat.id === currentCategoryId);
-  const isCategoryDeleted = !selectedCategory;
+  const isCategoryDeleted =
+    currentCategoryId !== undefined &&
+    currentCategoryId !== null &&
+    currentCategoryId !== 0 &&
+    !!currentCategoryId &&
+    !selectedCategory;
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
