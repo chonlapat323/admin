@@ -13,6 +13,12 @@ export default function FilterBar({ filters, values, onChange, onApply, onClear 
               type="text"
               value={values[filter.key] || ""}
               onChange={(e) => onChange(filter.key, e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onApply();
+                }
+              }}
               className="border px-3 py-1 rounded-md"
             />
           )}

@@ -2,8 +2,8 @@ import { useCancelOrder } from "../api/order/useCancelOrder";
 import { useAdminGetOrders } from "../api/order/userAdminGetOrder";
 import { useUpdateOrderStatus } from "../api/order/useUpdateOrderStatus";
 
-export const useOrderActions = (page: number, limit: number) => {
-  const { data, isLoading, isError, refresh } = useAdminGetOrders(page, limit);
+export const useOrderActions = (page: number, limit: number, search: string) => {
+  const { data, isLoading, isError, refresh } = useAdminGetOrders(page, limit, search);
   const updateStatus = useUpdateOrderStatus();
   const cancel = useCancelOrder();
 
