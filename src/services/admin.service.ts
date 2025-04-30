@@ -7,8 +7,22 @@ import { Member } from "@/types/member";
 import { FormFields } from "@/types/user-form";
 import { UseFormReturn } from "react-hook-form";
 
-export function getAdmins(page: number): Promise<PaginatedAdminResponse<Member>> {
-  return fetchWithAuth<PaginatedAdminResponse<Member>>(`${API_URL}/users?role=admin&page=${page}`);
+export function getAdmins(
+  page: number,
+  limit: number,
+  search: string
+): Promise<PaginatedAdminResponse<Member>> {
+  const params = new URLSearchParams({
+    role: "admin",
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) {
+    params.set("search", search);
+  }
+
+  return fetchWithAuth<PaginatedAdminResponse<Member>>(`${API_URL}/users?${params.toString()}`);
 }
 
 export function getAdmin(id: string): Promise<Member> {

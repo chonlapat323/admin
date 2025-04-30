@@ -3,7 +3,7 @@ import { getAdmins } from "@/services/admin.service";
 import { Member } from "@/types/member";
 import { toast } from "sonner";
 
-export function useAdmins(page: number) {
+export function useAdmins(page: number, limit: number, search: string) {
   const [admins, setAdmins] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
@@ -12,9 +12,9 @@ export function useAdmins(page: number) {
     const fetch = async () => {
       try {
         setLoading(true);
-        const result = await getAdmins(page);
-        setAdmins(result.items || []);
-        setTotalPages(result.total_page || 1);
+        const result = await getAdmins(page, limit, search);
+        setAdmins(result.data || []);
+        setTotalPages(result.pageCount || 1);
       } catch (err) {
         console.error(err);
         toast.error("โหลดข้อมูลแอดมินล้มเหลว");
@@ -24,7 +24,7 @@ export function useAdmins(page: number) {
     };
 
     fetch();
-  }, [page]);
+  }, [page, search]);
 
   return {
     admins,
