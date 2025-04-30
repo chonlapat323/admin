@@ -3,8 +3,21 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { SlideListResponse } from "@/types/api/slide/SlideListResponse";
 import { DeleteSlideResponse, Slide, SlideFormFields } from "@/types/slide";
 
-export function getSlides(page: number = 1): Promise<SlideListResponse> {
-  return fetchWithAuth<SlideListResponse>(`${API_URL}/slides?page=${page}`, {
+export function getSlides(
+  page: number = 1,
+  limit: number,
+  search: string
+): Promise<SlideListResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) {
+    params.set("search", search);
+  }
+
+  return fetchWithAuth<SlideListResponse>(`${API_URL}/slides?${params.toString()}`, {
     method: "GET",
   });
 }

@@ -6,7 +6,7 @@ import { getSlides, deleteSlide } from "@/services/slide.service";
 import { Slide } from "@/types/slide";
 import { toast } from "sonner";
 
-export function useSlides(page: number = 1) {
+export function useSlides(page: number = 1, limit: number, search: string) {
   const router = useRouter();
   const [slides, setSlides] = useState<Slide[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,13 +17,13 @@ export function useSlides(page: number = 1) {
 
   useEffect(() => {
     setLoading(true);
-    getSlides(page)
+    getSlides(page, limit, search)
       .then((res) => {
         setSlides(res.data);
         setTotalPages(res.totalPages);
       })
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, search]);
 
   const handleEditClick = (id: number) => {
     router.push(`/slides/${id}/edit`);
