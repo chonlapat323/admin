@@ -10,7 +10,6 @@ import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { BoxIconLine, PencilIcon, TrashBinIcon } from "@/icons";
 import Link from "next/link";
 import { useProducts } from "@/hooks/products/useProducts";
-import { useRouter, useSearchParams } from "next/navigation";
 import { FilterOption } from "@/types/components/tables/FilterBar";
 import { useFilter } from "@/hooks/components/tables/useFilter";
 import FilterBar from "@/components/tables/FilterBar";

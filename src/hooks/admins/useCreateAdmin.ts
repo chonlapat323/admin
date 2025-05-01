@@ -14,7 +14,7 @@ export function useCreateAdmin(form: UseFormReturn<FormFields>, avatarFile: File
       formData.append("avatar", avatarFile);
     }
     try {
-      const res = await createAdmin(formData);
+      await createAdmin(formData);
       toast.success("Admin added successfully!");
       router.push("/admins");
     } catch (error) {

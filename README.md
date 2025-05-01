@@ -2,7 +2,22 @@
 
 MyShop Admin is a modern and responsive **admin panel** for managing your eCommerce platform. Built with **Next.js 15**, **React 19**, **TypeScript**, and **Tailwind CSS**, it offers a powerful foundation for managing products, orders, users, and more.
 
+---
+
+## 🧩 MyShop Admin Architecture Diagram
+
+<img src="public/images/screenshot/diagram.svg" alt="Architecture Diagram" width="800"/>
+
+---
+
+## 🌐 Web UI Preview
+
+### 🖥 Desktop View
+
 ![MyShop Admin Preview](public/images/screenshot/1.png)
+
+### 📱 Mobile View
+
 ![MyShop Admin Preview](public/images/screenshot/m1.png)
 
 This project is optimized for performance and flexibility, enabling developers to quickly build a fully functional.
@@ -89,11 +104,3 @@ npm start
 ```
 
 ---
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-## 🙌 Support
-
-Give this project a ⭐ on GitHub if you find it helpful!

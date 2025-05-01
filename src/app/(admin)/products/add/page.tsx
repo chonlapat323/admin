@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateProduct } from "@/hooks/products/useCreateProduct";
-import { useCategories } from "@/hooks/categories/useCategories";
 import { ProductFormFields } from "@/types/products/product-form";
 import { ImageData } from "@/components/ui/upload/MultiImageUpload";
 import ProductForm from "@/components/form/product/ProductForm";
@@ -14,6 +13,7 @@ export default function AddProductPage() {
   const { handleSubmit } = useCreateProduct(form);
   const { categories, loading } = useAllCategories();
   const [imageUrls, setImageUrls] = useState<ImageData[]>([]);
+
   if (loading) {
     return <p>Loading categories...</p>;
   }

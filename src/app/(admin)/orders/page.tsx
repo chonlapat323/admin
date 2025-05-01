@@ -53,6 +53,7 @@ export default function AdminOrderListPage() {
         toast.success("Order cancelled successfully.");
         setShowCancelModal(false);
       } catch (error) {
+        console.log(error);
         toast.error("Failed to cancel the order.");
       }
     }

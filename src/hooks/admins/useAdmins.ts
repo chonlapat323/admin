@@ -24,7 +24,7 @@ export function useAdmins(page: number, limit: number, search: string) {
     };
 
     fetch();
-  }, [page, search]);
+  }, [page, limit, search]);
 
   return {
     admins,

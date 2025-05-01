@@ -70,7 +70,7 @@ export function useEditCategory(form: UseFormReturn<CategoryFormFields>) {
 
       toast.success("Category updated successfully");
       router.push("/categories");
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleHttpError<CategoryFormFields>(error, setError);
     }
   };

@@ -23,7 +23,7 @@ export function useSlides(page: number = 1, limit: number, search: string) {
         setTotalPages(res.pageCount);
       })
       .finally(() => setLoading(false));
-  }, [page, search]);
+  }, [page, limit, search]);
 
   const handleEditClick = (id: number) => {
     router.push(`/slides/${id}/edit`);
@@ -43,6 +43,7 @@ export function useSlides(page: number = 1, limit: number, search: string) {
       toast.success("ลบสไลด์สำเร็จแล้ว");
       setSlides((prev) => prev.filter((s) => s.id !== selectedId));
     } catch (err) {
+      console.log(err);
       toast.error("ลบไม่สำเร็จ");
     } finally {
       setDeletingId(null);

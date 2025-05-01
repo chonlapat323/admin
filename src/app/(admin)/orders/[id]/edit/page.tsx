@@ -6,6 +6,7 @@ import EditOrderForm from "@/components/form/orders/EditOrderForm";
 import { useEditOrder } from "@/hooks/orders/useEditOrder";
 import { formatDate } from "@/utils/format-date";
 import { getOrderStatusColor, getOrderStatusLabel } from "@/utils/orders/order-status";
+import Image from "next/image";
 
 export default function AdminOrderEditPage() {
   const form = useForm<EditOrderFormFields>();
@@ -34,7 +35,7 @@ export default function AdminOrderEditPage() {
           <span className="font-medium">Total:</span> ฿ {order.total_price.toLocaleString()}
         </p>
         <p>
-          <span className="font-medium">User:</span> {order.user_name}
+          <span className="font-medium">User:</span> {order.shipping_address.full_name}
         </p>
         <p>
           <span className="font-medium">Tracking:</span> {order.tracking_number || "-"}
@@ -45,10 +46,17 @@ export default function AdminOrderEditPage() {
           <div className="space-y-3">
             {order.items.map((item) => (
               <div key={item.id} className="flex items-start gap-3 border-b pb-3">
-                <img
-                  src={`${process.env.NEXT_PUBLIC_API_URL}${item.product.product_image[0]?.url}`}
+                <Image
+                  src={
+                    item.product.product_image[0]?.url
+                      ? `${process.env.NEXT_PUBLIC_API_URL}${item.product.product_image[0].url}`
+                      : "/images/placeholder.png"
+                  }
                   alt={item.product_name}
+                  width={64}
+                  height={64}
                   className="w-16 h-16 object-cover rounded border"
+                  unoptimized
                 />
                 <div>
                   <p className="font-medium">{item.product_name}</p>

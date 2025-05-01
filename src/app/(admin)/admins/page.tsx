@@ -63,6 +63,7 @@ export default function AdminUserPage() {
         onApply={onApply}
         onClear={onClear}
       />
+
       <div className="p-6 bg-white rounded-xl dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05]">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-800">Admin List</h2>

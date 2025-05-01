@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FilterOption } from "@/types/components/tables/FilterBar";
 import { useFilter } from "@/hooks/components/tables/useFilter";
 import FilterBar from "@/components/tables/FilterBar";
+import Image from "next/image";
 
 export default function CategoryListPage() {
   const [page, setPage] = useState(1);
@@ -56,6 +57,7 @@ export default function CategoryListPage() {
         onApply={onApply}
         onClear={onClear}
       />
+
       <div className="p-6 bg-white rounded-xl border border-gray-200 dark:border-white/[0.05] dark:bg-white/[0.03]">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-800">Category List</h2>
@@ -98,14 +100,17 @@ export default function CategoryListPage() {
                       }`}
                     >
                       <TableCell>
-                        <img
+                        <Image
                           src={
                             category.image
                               ? `${process.env.NEXT_PUBLIC_API_URL}${category.image}`
                               : "/images/placeholder.png"
                           }
                           alt={`Image of ${category.name}`}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 object-cover rounded-md border"
+                          unoptimized
                         />
                       </TableCell>
                       <TableCell className="text-left py-3">{category.name}</TableCell>
