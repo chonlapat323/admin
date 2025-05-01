@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { createProduct } from "@/services/product.service";
 import { UseFormReturn } from "react-hook-form";
 import { ProductFormFields } from "@/types/products/product-form";
+import { handleHttpError } from "@/utils/error/errors";
 
 export function useCreateProduct(form: UseFormReturn<ProductFormFields>) {
   const router = useRouter();
@@ -16,17 +17,9 @@ export function useCreateProduct(form: UseFormReturn<ProductFormFields>) {
 
       toast.success("Product created successfully");
       router.push("/products");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-
-      if (error?.status === 409) {
-        setError("name", {
-          type: "manual",
-          message: "This product name is already in use.",
-        });
-      } else {
-        toast.error(error?.message || "Failed to create product");
-      }
+      handleHttpError<ProductFormFields>(error, setError);
     }
   };
 

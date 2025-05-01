@@ -25,7 +25,6 @@ const ProductForm = ({
   onSubmit,
   isSave,
   categories,
-  deletedCategoryId,
   loading,
 }: ProductFormProps) => {
   if (loading) {

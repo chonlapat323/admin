@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { deleteMember } from "@/services/member.service";
+import { Member } from "@/types/member";
 
-export function useMemberList(setMembers: React.Dispatch<React.SetStateAction<any[]>>) {
+export function useMemberList(setMembers: React.Dispatch<React.SetStateAction<Member[]>>) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);

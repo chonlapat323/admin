@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/products/product";
 import { getProducts, deleteProduct } from "@/services/product.service";
@@ -21,11 +21,7 @@ export function useProducts({ page, limit, search, categoryId, isActive }: UsePr
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [page, search, categoryId, isActive]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getProducts({
@@ -43,7 +39,11 @@ export function useProducts({ page, limit, search, categoryId, isActive }: UsePr
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, search, categoryId, isActive]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleEditClick = (id: number) => {
     router.push(`/products/${id}/edit`);
@@ -63,6 +63,7 @@ export function useProducts({ page, limit, search, categoryId, isActive }: UsePr
       setProducts((prev) => prev.filter((p) => p.id !== selectedId));
       toast.success("Product deleted successfully.");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to delete product.");
     } finally {
       setDeletingId(null);

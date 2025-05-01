@@ -7,6 +7,7 @@ import { getProduct, updateProduct } from "@/services/product.service";
 import { ProductFormFields } from "@/types/products/product-form";
 import { toast } from "sonner";
 import { useAllCategories } from "../categories/useAllCategories";
+import { handleHttpError } from "@/utils/error/errors";
 
 export function useEditProduct() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export function useEditProduct() {
   const productId = Number(params.id);
   const form = useForm<ProductFormFields>();
   const { reset, setError } = form;
-  const { categories, loading: loadingCategories } = useAllCategories();
+  const { categories } = useAllCategories();
   const [loading, setLoading] = useState(true);
   const [imageUrls, setImageUrls] = useState<{ id?: number; url: string }[]>([]);
   const [deletedCategory, setDeletedCategory] = useState<number | null>(null);
@@ -68,7 +69,7 @@ export function useEditProduct() {
     };
 
     fetchProduct();
-  }, [productId, reset]);
+  }, [productId, categories, reset]);
 
   const handleSubmit = async (values: ProductFormFields) => {
     try {
@@ -79,17 +80,9 @@ export function useEditProduct() {
 
       toast.success("Product updated successfully");
       router.push("/products");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-
-      if (error?.status === 409) {
-        setError("name", {
-          type: "manual",
-          message: "This product name is already in use.",
-        });
-      } else {
-        toast.error(error?.message || "Failed to update product");
-      }
+      handleHttpError<ProductFormFields>(error, setError);
     }
   };
 

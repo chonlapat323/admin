@@ -31,7 +31,7 @@ export function useCategories(page: number = 1, limit: number | null, search?: s
     };
 
     fetch();
-  }, [page, search]);
+  }, [page, limit, search]);
 
   const handleEditClick = (id: number) => {
     router.push(`/categories/${id}/edit`);

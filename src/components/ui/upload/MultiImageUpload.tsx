@@ -7,7 +7,14 @@ import { useUploadImages } from "@/hooks/ui/useUploadImages";
 import ConfirmModal from "../modal/ConfirmModal";
 import { deleteProductImage } from "@/services/product.service";
 
-import { DndContext, closestCenter, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  DragEndEvent,
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
@@ -85,14 +92,18 @@ export default function MultiImageUpload({
     if (selectedIndex === null) return;
 
     const image = images[selectedIndex];
-    let check_url = image.url.startsWith("/uploads/products");
-    if (type === "slide") {
-      check_url = image.url.startsWith("/uploads/slides");
-    }
+    const check_url =
+      type === "slide"
+        ? image.url.startsWith("/uploads/slides")
+        : image.url.startsWith("/uploads/products");
 
     if (check_url && image.id) {
       try {
-        type === "slide" ? await deleteSlidetImage(image.id) : await deleteProductImage(image.id);
+        if (type === "slide") {
+          await deleteSlidetImage(image.id);
+        } else {
+          await deleteProductImage(image.id);
+        }
       } catch {
         toast.error("ลบรูปภาพไม่สำเร็จ");
       }
@@ -107,7 +118,7 @@ export default function MultiImageUpload({
     setShowConfirm(false);
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 

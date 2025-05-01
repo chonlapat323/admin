@@ -31,7 +31,7 @@ export function useMembers(page: number, limit: number, search: string) {
     };
 
     fetch();
-  }, [page, search]);
+  }, [page, limit, search]);
 
   const handleEditClick = (id: number) => {
     router.push(`/members/${id}/edit`);
@@ -51,6 +51,7 @@ export function useMembers(page: number, limit: number, search: string) {
       toast.success("ลบสมาชิกสำเร็จแล้ว");
       setMembers((prev) => prev.filter((m) => m.id !== selectedId));
     } catch (err) {
+      console.log(err);
       toast.error("ลบไม่สำเร็จ");
     } finally {
       setDeletingId(null);
