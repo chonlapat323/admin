@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { getMembers, deleteMember } from "@/services/member.service";
 import { Member } from "@/types/member";
 
-export function useMembers(page: number) {
+export function useMembers(page: number, limit: number, search: string) {
   const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,9 +19,9 @@ export function useMembers(page: number) {
     const fetch = async () => {
       try {
         setLoading(true);
-        const result = await getMembers(page);
-        setMembers(result.items || []);
-        setTotalPages(result.total_page || 1);
+        const result = await getMembers(page, limit, search);
+        setMembers(result.data || []);
+        setTotalPages(result.pageCount || 1);
       } catch (err) {
         console.error(err);
         toast.error("โหลดข้อมูลเมมเบอร์ล้มเหลว");
@@ -31,7 +31,7 @@ export function useMembers(page: number) {
     };
 
     fetch();
-  }, [page]);
+  }, [page, search]);
 
   const handleEditClick = (id: number) => {
     router.push(`/members/${id}/edit`);

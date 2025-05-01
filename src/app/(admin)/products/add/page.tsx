@@ -7,11 +7,12 @@ import { useCategories } from "@/hooks/categories/useCategories";
 import { ProductFormFields } from "@/types/products/product-form";
 import { ImageData } from "@/components/ui/upload/MultiImageUpload";
 import ProductForm from "@/components/form/product/ProductForm";
+import { useAllCategories } from "@/hooks/categories/useAllCategories";
 
 export default function AddProductPage() {
   const form = useForm<ProductFormFields>({ defaultValues: { is_active: true } });
   const { handleSubmit } = useCreateProduct(form);
-  const { categories, loading } = useCategories();
+  const { categories, loading } = useAllCategories();
   const [imageUrls, setImageUrls] = useState<ImageData[]>([]);
   if (loading) {
     return <p>Loading categories...</p>;

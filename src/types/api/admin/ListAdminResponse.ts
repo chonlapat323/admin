@@ -1,6 +1,6 @@
 export interface PaginatedAdminResponse<T> {
-  items: T[];
+  data: T[];
   current_page: number;
-  total_page: number;
+  pageCount: number;
   total_items: number;
 }

@@ -29,6 +29,16 @@ export type OrderItem = {
   product: OrderItemProduct;
 };
 
+export interface ShippingAddress {
+  full_name: string;
+  address_line: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  country: string;
+  phone_number: string;
+}
+
 export type AdminOrder = {
   id: number;
   order_number: string;
@@ -36,6 +46,6 @@ export type AdminOrder = {
   order_status: OrderStatus;
   created_at: string;
   tracking_number?: string | null;
-  user_name: string | null;
+  shipping_address: ShippingAddress;
   items: OrderItem[];
 };

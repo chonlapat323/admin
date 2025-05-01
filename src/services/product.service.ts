@@ -5,8 +5,29 @@ import { PaginatedResponse } from "@/types/PaginatedResonse";
 import { Product } from "@/types/products/product";
 import { DeleteResponse } from "@/types/DeleteResponse";
 
-export function getProducts(page: number = 1): Promise<PaginatedResponse<Product>> {
-  return fetchWithAuth<PaginatedResponse<Product>>(`${API_URL}/products/paginated?page=${page}`, {
+export function getProducts({
+  page,
+  limit,
+  search,
+  category_id,
+  is_active,
+}: {
+  page: number;
+  limit: number;
+  search?: string;
+  category_id?: string;
+  is_active?: string;
+}): Promise<PaginatedResponse<Product>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) params.set("search", search);
+  if (category_id) params.set("category_id", category_id);
+  if (is_active) params.set("is_active", is_active);
+
+  return fetchWithAuth<PaginatedResponse<Product>>(`${API_URL}/products/paginated?${params}`, {
     method: "GET",
     cache: "no-store",
   });

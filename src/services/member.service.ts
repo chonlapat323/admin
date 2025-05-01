@@ -4,8 +4,22 @@ import { CreateAdminResponse } from "@/types/api/admin/CreateAdminResponse";
 import { PaginatedAdminResponse } from "@/types/api/admin/ListAdminResponse";
 import { Member } from "@/types/member";
 
-export function getMembers(page: number): Promise<PaginatedAdminResponse<Member>> {
-  return fetchWithAuth<PaginatedAdminResponse<Member>>(`${API_URL}/users?role=member&page=${page}`);
+export function getMembers(
+  page: number,
+  limit: number,
+  search: string
+): Promise<PaginatedAdminResponse<Member>> {
+  const params = new URLSearchParams({
+    role: "member",
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) {
+    params.set("search", search);
+  }
+
+  return fetchWithAuth<PaginatedAdminResponse<Member>>(`${API_URL}/users?${params.toString()}`);
 }
 
 export function getMemberById(id: string): Promise<Member> {

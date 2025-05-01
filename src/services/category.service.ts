@@ -8,14 +8,24 @@ export function getAllCategories(): Promise<Category[]> {
   return fetchWithAuth<Category[]>(`${API_URL}/categories/active`);
 }
 
-export function getCategories(page: number = 1): Promise<PaginatedResponse<Category>> {
-  return fetchWithAuth<PaginatedResponse<Category>>(
-    `${API_URL}/categories/paginated?page=${page}`,
-    {
-      method: "GET",
-      cache: "no-store",
-    }
-  );
+export function getCategories(
+  page: number = 1,
+  limit: number,
+  search: string
+): Promise<PaginatedResponse<Category>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) {
+    params.set("search", search);
+  }
+
+  return fetchWithAuth<PaginatedResponse<Category>>(`${API_URL}/categories/paginated?${params}`, {
+    method: "GET",
+    cache: "no-store",
+  });
 }
 
 export function getCategoryById(id: string): Promise<Category> {

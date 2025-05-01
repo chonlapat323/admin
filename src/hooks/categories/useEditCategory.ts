@@ -9,6 +9,7 @@ import { CategoryFormFields } from "@/types/categories/CategoryForm";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import { updateCategory } from "@/services/category.service"; // เราจะสร้างอันนี้ด้วย
+import { handleHttpError } from "@/utils/error/errors";
 
 export function useEditCategory(form: UseFormReturn<CategoryFormFields>) {
   const router = useRouter();
@@ -70,15 +71,7 @@ export function useEditCategory(form: UseFormReturn<CategoryFormFields>) {
       toast.success("Category updated successfully");
       router.push("/categories");
     } catch (error: any) {
-      console.error(error);
-      if (error?.statusCode === 409) {
-        setError("name", {
-          type: "manual",
-          message: "This category name is already in use.",
-        });
-      } else {
-        toast.error(error?.message || "Failed to update category");
-      }
+      handleHttpError<CategoryFormFields>(error, setError);
     }
   };
 

@@ -9,6 +9,7 @@ export function handleHttpError<T extends FieldValues>(
 
     if (maybeError.status === 409) {
       const message = maybeError.message || "Conflict detected.";
+      debugger;
       if (setError) {
         if (message.includes("name")) {
           setError("name" as Path<T>, { type: "manual", message: "This name is already in use." });
