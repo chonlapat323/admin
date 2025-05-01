@@ -29,7 +29,7 @@ export default function AdminOrderListPage() {
   const filterOptions: FilterOption[] = [
     {
       key: "search",
-      label: "Search by Order Number, Name, or Tracking Number",
+      label: "Search",
       type: "text",
     },
   ];

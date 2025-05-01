@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 import { Product } from "@/types/products/product";
 import { getProducts, deleteProduct } from "@/services/product.service";
 import { toast } from "sonner";
-
-export function useProducts(page: number = 1) {
+type UseProductsParams = {
+  page: number;
+  limit: number;
+  search: string;
+  categoryId: string;
+  isActive: string;
+};
+export function useProducts({ page, limit, search, categoryId, isActive }: UseProductsParams) {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,12 +23,18 @@ export function useProducts(page: number = 1) {
 
   useEffect(() => {
     fetchProducts();
-  }, [page]);
+  }, [page, search, categoryId, isActive]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await getProducts(page);
+      const res = await getProducts({
+        page,
+        limit,
+        search,
+        category_id: categoryId,
+        is_active: isActive,
+      });
       setProducts(res.data);
       setTotalPages(res.pageCount || 1);
     } catch (err) {
