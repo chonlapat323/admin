@@ -96,8 +96,6 @@ Visit `http://localhost:3000` to view the admin panel.
 
 ## 📦 Deployment
 
-You can deploy this project on [Vercel](https://vercel.com) or your preferred platform.
-
 ```bash
 npm run build
 npm start
