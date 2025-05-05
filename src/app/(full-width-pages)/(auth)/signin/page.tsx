@@ -1,4 +1,3 @@
-"use client";
 import SignInForm from "@/components/auth/SignInForm";
 import { Metadata } from "next";
 

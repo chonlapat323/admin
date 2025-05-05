@@ -6,12 +6,9 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
 import { toast } from "sonner";
 export default function SignInForm() {
-  const router = useRouter();
-
   // State สำหรับฟิลด์ในฟอร์ม
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +33,7 @@ export default function SignInForm() {
 
       await res.json();
       if (res.ok) {
-        router.push("/");
+        window.location.href = "/";
       } else {
         toast.error("Login failed");
       }
