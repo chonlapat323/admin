@@ -28,6 +28,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
         credentials: "include",
       });
       const data: { message: string } = await res.json();
+      debugger;
       if (data.message === "Logged out successfully") {
         window.location.href = "/signin";
       }
