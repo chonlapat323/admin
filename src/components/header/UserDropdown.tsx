@@ -29,8 +29,10 @@ export default function UserDropdown({ user }: UserDropdownProps) {
       });
       const data: { message: string } = await res.json();
       debugger;
+      console.log("Logout");
       if (data.message === "Logged out successfully") {
-        window.location.href = "/signin";
+        console.log("Logout");
+        //window.location.href = "/signin";
       }
     } catch (err) {
       console.error("Logout failed:", err);
