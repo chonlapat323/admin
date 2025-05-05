@@ -34,6 +34,7 @@ export default function SignInForm() {
       });
 
       const data = await res.json();
+      console.log(data);
       if (res.ok) {
         // Login สำเร็จ
         router.push("/"); // ตัวอย่าง redirect ไป /admin
@@ -93,7 +94,7 @@ export default function SignInForm() {
             </div>
 
             {/* ฟอร์ม Sign In */}
-            <form onSubmit={handleSubmit} className="space-y-6"  autoComplete="off">
+            <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
               <div>
                 <Label>
                   Email <span className="text-error-500">*</span>
