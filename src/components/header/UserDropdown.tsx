@@ -23,11 +23,14 @@ export default function UserDropdown({ user }: UserDropdownProps) {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_URL}/auth/logout`, {
+      const res = await fetch(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
-      window.location.href = "/signin";
+      const data: { message: string } = await res.json();
+      if (data.message === "Logged out successfully") {
+        window.location.href = "/signin";
+      }
     } catch (err) {
       console.error("Logout failed:", err);
     }
