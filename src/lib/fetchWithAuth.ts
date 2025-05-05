@@ -5,7 +5,6 @@ export async function fetchWithAuth<T>(input: RequestInfo, init?: RequestInit): 
     ...init,
     credentials: "include",
   });
-
   if (response.status === 401) {
     const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
