@@ -36,8 +36,6 @@ export default function SignInForm() {
 
       await res.json();
       if (res.ok) {
-        console.log("Login success, waiting a bit before redirect...");
-        await new Promise((resolve) => setTimeout(resolve, 100)); // รอ 100ms
         router.push("/");
       } else {
         toast.error("Login failed");
