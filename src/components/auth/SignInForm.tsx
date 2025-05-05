@@ -8,6 +8,7 @@ import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
+import { toast } from "sonner";
 export default function SignInForm() {
   const router = useRouter();
 
@@ -33,13 +34,13 @@ export default function SignInForm() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-      console.log(data);
+      await res.json();
       if (res.ok) {
-        // Login สำเร็จ
-        router.push("/"); // ตัวอย่าง redirect ไป /admin
+        console.log("Login success, waiting a bit before redirect...");
+        await new Promise((resolve) => setTimeout(resolve, 100)); // รอ 100ms
+        router.push("/");
       } else {
-        alert(data.message || "Login failed");
+        toast.error("Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
