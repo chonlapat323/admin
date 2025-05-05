@@ -6,7 +6,7 @@ import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { useProfile } from "@/hooks/api/auth/useProfile";
 const AppHeader: React.FC = () => {
-  const { user } = useProfile();
+  const { user, loading } = useProfile();
 
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
@@ -168,7 +168,11 @@ const AppHeader: React.FC = () => {
             {/* <!-- Notification Menu Area --> */}
           </div>
           {/* <!-- User Area --> */}
-          <UserDropdown user={user} />
+          {loading ? (
+            <div className="w-11 h-11 rounded-full bg-gray-200 animate-pulse" />
+          ) : (
+            <UserDropdown user={user} />
+          )}
         </div>
       </div>
     </header>
