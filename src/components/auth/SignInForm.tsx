@@ -9,6 +9,7 @@ import Link from "next/link";
 import { API_URL } from "@/lib/config";
 import { toast } from "sonner";
 export default function SignInForm() {
+  const [errorMessage, setErrorMessage] = useState("");
   // State สำหรับฟิลด์ในฟอร์ม
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +24,6 @@ export default function SignInForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      // เรียก API /api/login
       const res = await fetch(`${API_URL}/auth/login_admin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,15 +31,15 @@ export default function SignInForm() {
         body: JSON.stringify({ email, password }),
       });
 
-      await res.json();
+      const data = await res.json();
       if (res.ok) {
         window.location.href = "/";
       } else {
-        toast.error("Login failed");
+        setErrorMessage(data.message || "Email or password is incorrect");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Something went wrong!");
+      toast.error(`Login error: ${error}`);
     }
   };
 
@@ -67,29 +67,9 @@ export default function SignInForm() {
           </div>
 
           <div>
-            {/* ปุ่ม Social Login (คุณสามารถเพิ่มคอมโพเนนต์ปุ่ม Social Login เพิ่มเติมได้ตามต้องการ) */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
-              {/* ตัวอย่างปุ่ม Social Login: */}
-              <Button className="w-full" size="sm">
-                Sign in with Google
-              </Button>
-              <Button className="w-full" size="sm">
-                Sign in with X
-              </Button>
-            </div>
-
-            <div className="relative py-3 sm:py-5">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="p-2 text-gray-400 bg-white dark:bg-gray-900 sm:px-5 sm:py-2">
-                  Or
-                </span>
-              </div>
-            </div>
-
-            {/* ฟอร์ม Sign In */}
+            {errorMessage && (
+              <p className="mt-2 text-sm text-red-500 text-center">{errorMessage}</p>
+            )}
             <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
               <div>
                 <Label>
