@@ -10,6 +10,7 @@ import { API_URL } from "@/lib/config";
 import { toast } from "sonner";
 export default function SignInForm() {
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   // State สำหรับฟิลด์ในฟอร์ม
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +24,7 @@ export default function SignInForm() {
   // ฟังก์ชันจัดการเมื่อผู้ใช้กด Sign in
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch(`${API_URL}/auth/login_admin`, {
         method: "POST",
@@ -36,10 +38,12 @@ export default function SignInForm() {
         window.location.href = "/";
       } else {
         setErrorMessage(data.message || "Email or password is incorrect");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Login error:", error);
       toast.error(`Login error: ${error}`);
+      setLoading(false);
     }
   };
 
@@ -125,7 +129,7 @@ export default function SignInForm() {
 
               <div>
                 <Button type="submit" className="w-full" size="sm">
-                  Sign in
+                  {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </div>
             </form>
