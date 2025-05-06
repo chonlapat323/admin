@@ -23,7 +23,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_URL}/auth/logout`, {
+      await fetch(`${API_URL}/auth/logout_admin`, {
         method: "POST",
         credentials: "include",
       });
