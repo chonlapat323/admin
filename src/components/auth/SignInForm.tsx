@@ -24,7 +24,7 @@ export default function SignInForm() {
     e.preventDefault();
     try {
       // เรียก API /api/login
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetch(`${API_URL}/auth/login_admin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
