@@ -5,7 +5,7 @@ import { API_URL } from "@/lib/config";
 
 export function useGetOrder(orderId: number) {
   const { data, error, isLoading, mutate } = useSWR<AdminOrder>(
-    orderId ? `${API_URL}/orders/${orderId}` : null,
+    orderId ? `${API_URL}/orders/admin/${orderId}` : null,
     () => getAdminOrderById(orderId)
   );
 
