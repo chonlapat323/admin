@@ -9,11 +9,11 @@ export function getAdminOrders(url: string): Promise<PaginatedResponse<AdminOrde
 }
 
 export function getAdminOrderById(orderId: number): Promise<AdminOrder> {
-  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/${orderId}`);
+  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/admin/${orderId}`);
 }
 
 export function updateOrder(orderId: number, data: EditOrderFormFields): Promise<AdminOrder> {
-  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/${orderId}`, {
+  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/admin/${orderId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -23,14 +23,14 @@ export function updateOrder(orderId: number, data: EditOrderFormFields): Promise
 }
 
 export async function updateOrderStatus(orderId: number, status: string): Promise<AdminOrder> {
-  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/${orderId}/status`, {
+  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/admin/${orderId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });
 }
 
 export function cancelOrder(orderId: number): Promise<AdminOrder> {
-  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/${orderId}/cancel`, {
+  return fetchWithAuth<AdminOrder>(`${API_URL}/orders/admin/${orderId}/cancel`, {
     method: "PATCH",
   });
 }
