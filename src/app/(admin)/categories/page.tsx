@@ -5,7 +5,7 @@ import { useCategories } from "@/hooks/categories/useCategories";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
-import { BoxIconLine, PencilIcon, TrashBinIcon } from "@/icons";
+import { BoxIconLine } from "@/icons";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FilterOption } from "@/types/components/tables/FilterBar";
