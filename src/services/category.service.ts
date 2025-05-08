@@ -46,6 +46,16 @@ export function updateCategory(id: number, formData: FormData): Promise<Category
   });
 }
 
+export function updateCategoryOrder(data: { id: number; order: number }[]): Promise<Category[]> {
+  return fetchWithAuth<Category[]>(`${API_URL}/categories/admin/order`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ data }),
+  });
+}
+
 export async function deleteCategory(id: number): Promise<DeleteResponse> {
   return fetchWithAuth<DeleteResponse>(`${API_URL}/categories/${id}`, {
     method: "DELETE",

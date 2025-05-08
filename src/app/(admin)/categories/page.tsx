@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
-import Button from "@/components/ui/button/Button";
 import Pagination from "@/components/tables/Pagination";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import { BoxIconLine, PencilIcon, TrashBinIcon } from "@/icons";
@@ -12,10 +11,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FilterOption } from "@/types/components/tables/FilterBar";
 import { useFilter } from "@/hooks/components/tables/useFilter";
 import FilterBar from "@/components/tables/FilterBar";
-import Image from "next/image";
+import SortableCategoryRow from "@/components/category/SortableCategoryRow";
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
+import { useSortableCategory } from "@/hooks/categories/useSortableCategory";
 
 export default function CategoryListPage() {
   const [page, setPage] = useState(1);
+
   const limit = 10;
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -48,6 +51,39 @@ export default function CategoryListPage() {
     router.push(`?${params.toString()}`);
   };
 
+  const { handleDragEnd, strategy, categoriesList } = useSortableCategory({
+    categories,
+    isDisabled: !!values.search,
+  });
+
+  const renderTable = () => {
+    if (loading || categoriesList.length === 0) {
+      return (
+        <TableBody>
+          <TableRow>
+            <TableCell className="text-center py-6">
+              {loading ? "Loading..." : "No categories found"}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      );
+    }
+
+    return (
+      <TableBody>
+        {categoriesList.map((category) => (
+          <SortableCategoryRow
+            key={category.id}
+            category={category}
+            isDeleting={deletingId === category.id}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
+          />
+        ))}
+      </TableBody>
+    );
+  };
+
   return (
     <>
       <FilterBar
@@ -70,87 +106,37 @@ export default function CategoryListPage() {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
-          <div className="min-w-[600px]">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableCell>Image</TableCell>
-                  <TableCell className="text-left">Name</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {loading ? (
+        <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto">
+            {values.search ? (
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell className="text-center py-6">Loading...</TableCell>
+                    <TableCell className="w-1/4 py-3 font-medium text-left">Image</TableCell>
+                    <TableCell className="w-1/4 py-3 font-medium text-left">Name</TableCell>
+                    <TableCell className="w-1/4 py-3 font-medium text-left">Status</TableCell>
+                    <TableCell className="w-1/4 py-3 font-medium text-left">Action</TableCell>
                   </TableRow>
-                ) : categories.length === 0 ? (
-                  <TableRow>
-                    <TableCell className="text-center py-6">No categories found</TableCell>
-                  </TableRow>
-                ) : (
-                  categories.map((category) => (
-                    <TableRow
-                      key={category.id}
-                      className={`transition-opacity duration-300 ${
-                        deletingId === category.id ? "opacity-0" : "opacity-100"
-                      }`}
-                    >
-                      <TableCell>
-                        <Image
-                          src={
-                            category.image
-                              ? `${process.env.NEXT_PUBLIC_API_URL}${category.image}`
-                              : "/images/placeholder.png"
-                          }
-                          alt={`Image of ${category.name}`}
-                          width={48}
-                          height={48}
-                          className="w-12 h-12 object-cover rounded-md border"
-                          unoptimized
-                        />
-                      </TableCell>
-                      <TableCell className="text-left py-3">{category.name}</TableCell>
-                      <TableCell className="text-left py-3">
-                        <span
-                          className={`px-2 py-1 rounded text-sm font-medium ${
-                            category.is_active
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {category.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-left py-3">
-                        <div className="flex items-center gap-3">
-                          <Button
-                            onClick={() => handleEditClick(category.id)}
-                            size="sm"
-                            variant="outline"
-                            startIcon={<PencilIcon />}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteClick(category.id)}
-                            size="sm"
-                            variant="outline"
-                            startIcon={<TrashBinIcon />}
-                            className="!text-red-600 border-red-200 hover:border-red-400 hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                {renderTable()}
+              </Table>
+            ) : (
+              <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={categoriesList.map((c) => c.id)} strategy={strategy}>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableCell className="w-1/4 py-3 font-medium text-left">Image</TableCell>
+                        <TableCell className="w-1/4 py-3 font-medium text-left">Name</TableCell>
+                        <TableCell className="w-1/4 py-3 font-medium text-left">Status</TableCell>
+                        <TableCell className="w-1/4 py-3 font-medium text-left">Action</TableCell>
+                      </TableRow>
+                    </TableHeader>
+                    {renderTable()}
+                  </Table>
+                </SortableContext>
+              </DndContext>
+            )}
           </div>
         </div>
 

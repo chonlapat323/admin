@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { forwardRef, ReactNode } from "react";
 
 // Props for Table
 interface TableProps {
@@ -47,16 +47,23 @@ const TableBody: React.FC<TableBodyProps> = ({ children, className }) => {
 };
 
 // TableRow Component
-const TableRow: React.FC<TableRowProps> = ({ children, className }) => {
-  return <tr className={className}>{children}</tr>;
-};
+interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
 
+const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <tr ref={ref} className={className} {...props}>
+        {children}
+      </tr>
+    );
+  }
+);
+
+TableRow.displayName = "TableRow";
+
+export default TableRow;
 // TableCell Component
-const TableCell: React.FC<TableCellProps> = ({
-  children,
-  isHeader = false,
-  className,
-}) => {
+const TableCell: React.FC<TableCellProps> = ({ children, isHeader = false, className }) => {
   const CellTag = isHeader ? "th" : "td";
   return <CellTag className={` ${className}`}>{children}</CellTag>;
 };
