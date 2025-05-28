@@ -34,7 +34,13 @@ export default function UserDropdown({ user }: UserDropdownProps) {
   };
 
   if (!user) {
-    return <>No Data.</>;
+    return (
+      <div className="flex items-center animate-pulse">
+        <span className="mr-3 rounded-full h-11 w-11 bg-gray-200 dark:bg-gray-700" />
+        <span className="block mr-1 h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
+        <span className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded ml-2" />
+      </div>
+    );
   }
 
   return (
