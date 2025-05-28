@@ -18,9 +18,9 @@ export async function middleware(req: NextRequest) {
   try {
     await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET!));
     return NextResponse.next(); // ✅ Token valid → ไปต่อ
-  } catch (err: any) {
+  } catch (err: unknown) {
     if (refreshToken) {
-      console.warn("⏳ Token expired, refresh token exists → Let client refresh.");
+      console.warn("⏳ Token expired, refresh token exists → Let client refresh.", err);
       return NextResponse.next(); // ✅ ให้ React ยิง /auth/refresh เอง
     }
 
