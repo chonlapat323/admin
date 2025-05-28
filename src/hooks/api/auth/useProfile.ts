@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export function useProfile() {
-  const { user, reloadProfile } = useAuth();
+  const { user, reloadProfile, loading } = useAuth();
 
   useEffect(() => {
     // โหลด profile ครั้งแรก
@@ -17,5 +17,5 @@ export function useProfile() {
     return () => window.removeEventListener("auth:refresh", handler);
   }, [reloadProfile]);
 
-  return { user };
+  return { user, loading };
 }
