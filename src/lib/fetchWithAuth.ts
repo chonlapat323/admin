@@ -14,6 +14,10 @@ export async function fetchWithAuth<T>(input: RequestInfo, init?: RequestInit): 
     });
 
     if (refreshRes.ok) {
+      // Trigger event หลัง refresh_token สำเร็จ
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth:refresh"));
+      }
       response = await fetch(input, {
         ...init,
         credentials: "include",

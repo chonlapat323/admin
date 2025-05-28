@@ -1,28 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getProfile } from "@/services/auth.service";
-import { User } from "@/types/user";
+import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export function useProfile() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, reloadProfile } = useAuth();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getProfile();
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch profile", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    }
+    // โหลด profile ครั้งแรก
+    reloadProfile();
 
-    fetchData();
-  }, []);
+    // subscribe event
+    const handler = () => reloadProfile();
+    window.addEventListener("auth:refresh", handler);
 
-  return { user, loading };
+    return () => window.removeEventListener("auth:refresh", handler);
+  }, [reloadProfile]);
+
+  return { user };
 }
